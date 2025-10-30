@@ -1,26 +1,26 @@
-// resources/static/js/components/GoalManager.js
+// resources/static/js/components/goals/GoalManager.js
 
+// ✅ NUEVA RUTA: Importa desde la misma carpeta
 import GoalForm from './GoalForm.js';
 import GoalList from './GoalList.js';
 
 export default {
+    // ✅ AHORA: Recibe 'slug' como un prop
+    props: ['slug'], 
+
     components: {
         'goal-form': GoalForm,
         'goal-list': GoalList,
     },
     data() {
         return {
-            slug: null,
+            // 'slug' ya no es necesario aquí, viene de props
             goals: [],
-            
-            // --- Estado de carga ---
-            isLoading: true,     // Carga inicial de la página
-            isUpdating: false,   // Spinner del botón "Actualizar Metas"
-            isDeleting: {},      // Objeto para spinners de borrado individuales
-
-            // --- Estado de mensajes ---
+            isLoading: true,
+            isUpdating: false,
+            isDeleting: {},
             message: null,
-            messageType: 'success', // 'success' o 'danger'
+            messageType: 'success',
         };
     },
     methods: {
@@ -36,10 +36,11 @@ export default {
             this.message = null;
         },
 
-        // --- Lógica de API (Métodos Principales) ---
+        // --- Lógica de API ---
         async fetchGoals() {
             this.isLoading = true;
             try {
+                // 'this.slug' funciona porque ahora es un prop
                 const response = await fetch(`/api/courses/${this.slug}/goals`);
                 if (!response.ok) throw new Error('Error al cargar las metas.');
                 this.goals = await response.json();
@@ -50,7 +51,6 @@ export default {
             }
         },
 
-        // Se llama desde el botón "Actualizar Metas"
         async updateGoals() {
             this.isUpdating = true;
             try {
@@ -63,13 +63,11 @@ export default {
                 if (!response.ok) {
                     const errorData = await response.json();
                     let errorMessage = 'No se pudo guardar la actualización.';
-
                     if (errorData.errors && Array.isArray(errorData.errors)) {
                         errorMessage = errorData.errors.map(err => err.defaultMessage).join(', ');
                     } else if (errorData.message) {
                         errorMessage = errorData.message;
                     }
-                    
                     throw new Error(errorMessage);
                 }
                 
@@ -81,39 +79,29 @@ export default {
             }
         },
 
-        // Se llama desde el evento @delete-goal de GoalList
         async handleGoalDelete(goal) {
-            // Marcamos esta meta como "borrándose"
             this.isDeleting[goal.id] = true;
-
             try {
                 const response = await fetch(`/api/courses/goals/${goal.id}`, {
                     method: 'DELETE',
                 });
                 if (!response.ok) throw new Error('No se pudo eliminar la meta.');
-
-                // Quitar la meta de la lista local
                 this.goals = this.goals.filter(g => g.id !== goal.id);
                 this.showMessage('Meta eliminada correctamente.', 'success');
-                
             } catch (err) {
                 this.showMessage(err.message, 'danger');
             } finally {
-                // Quitamos la marca "borrándose"
                 delete this.isDeleting[goal.id];
             }
         },
 
-        // Se llama desde el evento @goal-added de GoalForm
         handleGoalAdded(newGoal) {
             this.goals.push(newGoal);
         }
     },
     mounted() {
-        // Lee el slug del atributo 'data-slug' del HTML
-        this.slug = this.$el.dataset.slug;
-        
-        console.log('El slug leído desde data-slug es:', this.slug);
+        // ✅ CÓDIGO MÁS LIMPIO: Ya no necesitamos leer 'dataset'
+        console.log('Componente GoalManager montado. Slug (prop):', this.slug);
         
         // Inicia la carga de datos
         this.fetchGoals();
@@ -138,7 +126,7 @@ export default {
                                 tu curso es el adecuado para ellos.
                             </p>
                             <hr class="my-4">
-
+                            
                             <goal-list 
                                 v-model="goals"
                                 :is-deleting="isDeleting"

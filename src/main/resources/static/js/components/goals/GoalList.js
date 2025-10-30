@@ -1,24 +1,20 @@
-// resources/static/js/components/GoalList.js
+// resources/static/js/components/goals/GoalList.js
 
 export default {
     props: {
-        // Recibimos 'goals' como un objeto 'modelValue' para usar v-model
         modelValue: {
             type: Array,
             required: true
         },
-        // Recibimos el objeto de 'metas borrándose'
         isDeleting: {
             type: Object,
             required: true
         }
     },
-    emits: ['update:modelValue', 'delete-goal'], // Declaramos los eventos
+    emits: ['update:modelValue', 'delete-goal'],
     
     methods: {
-        // Este método permite que v-model funcione en el padre
         updateGoalName(index, newName) {
-            // Creamos una nueva copia del array para no mutar la prop
             const updatedGoals = [...this.modelValue];
             updatedGoals[index].name = newName;
             this.$emit('update:modelValue', updatedGoals);
@@ -28,7 +24,6 @@ export default {
         <div>
             <div v-for="(goal, index) in modelValue" :key="goal.id || ('new_' + index)" class="mb-3">
                 <div class="input-group">
-                    
                     <input type="text" class="form-control form-control-lg"
                            :value="goal.name"
                            @input="updateGoalName(index, $event.target.value)"
