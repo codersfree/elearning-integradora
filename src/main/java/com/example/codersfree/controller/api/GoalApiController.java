@@ -7,6 +7,7 @@ import com.example.codersfree.service.CourseService;
 import com.example.codersfree.service.GoalService;
 import jakarta.validation.Valid;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/instructor/courses")
+@RequestMapping("/api/courses")
 public class GoalApiController {
 
     @Autowired
@@ -24,6 +25,19 @@ public class GoalApiController {
 
     @Autowired
     private GoalService goalService;
+
+    @GetMapping("/{slug}/goals")
+    public ResponseEntity<List<GoalDto>> getGoals(@PathVariable String slug) {
+
+        Course course = courseService.findBySlug(slug);
+        
+        List<GoalDto> goalDtos = course.getGoals().stream()
+                .sorted(Comparator.comparing(Goal::getId))
+                .map(goal -> new GoalDto(goal.getId(), goal.getName()))
+                .toList();
+
+        return ResponseEntity.ok(goalDtos);
+    }
 
     @PostMapping("/{slug}/goals")
     public ResponseEntity<?> createGoal(
