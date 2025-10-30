@@ -1,5 +1,6 @@
-// resources/static/js/components/goals/GoalForm.js
 import { template } from './GoalForm.template.js';
+// ✅ 1. Importa el nuevo cliente API
+import api from '../../utils/apiUtils.js';
 
 export default {
     template: template,
@@ -22,29 +23,16 @@ export default {
             const url = `/api/courses/${this.slug}/goals`;
 
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: this.newGoalName }),
-                });
+                // ✅ 2. ¡Lógica de envío súper limpia!
+                const newGoal = await api.post(url, { name: this.newGoalName });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    let errorMessage = 'No se pudo crear la meta.';
-                    if (errorData.errors && Array.isArray(errorData.errors)) {
-                        errorMessage = errorData.errors.map(err => err.defaultMessage).join(', ');
-                    } else if (errorData.message) {
-                        errorMessage = errorData.message;
-                    }
-                    throw new Error(errorMessage);
-                }
-
-                const newGoal = await response.json();
+                // Si no hubo error, continuamos...
                 this.$emit('goal-added', newGoal);
                 this.$emit('show-message', 'Meta creada correctamente.', 'success');
                 this.clearForm();
 
             } catch (err) {
+                // ✅ 3. El 'catch' recibe el error ya procesado
                 console.error("Error al crear meta:", err);
                 this.$emit('show-message', err.message, 'danger');
             } finally {

@@ -1,13 +1,15 @@
+// resources/static/js/components/goals/GoalManager.js
+
 import { template } from './GoalManager.template.js';
+// ✅ Importa el nuevo cliente API
+import api from '../../utils/apiUtils.js';
 
 import GoalForm from './GoalForm.js';
 import GoalList from './GoalList.js';
 
 export default {
     template: template,
-    
     props: ['slug'], 
-
     components: {
         'goal-form': GoalForm,
         'goal-list': GoalList,
@@ -15,13 +17,9 @@ export default {
     data() {
         return {
             goals: [],
-
-            //Estados de carga
             isLoading: true,
             isUpdating: false,
             isDeleting: {},
-
-            // Mensajes
             message: null,
             messageType: 'success',
         };
@@ -38,16 +36,12 @@ export default {
             this.message = null;
         },
 
-        // --- Lógica de API ---
+        // --- Lógica de API Refactorizada ---
         async fetchGoals() {
-            // Estado de carga
             this.isLoading = true;
-
-            // Lógica para obtener las metas
             try {
-                const response = await fetch(`/api/courses/${this.slug}/goals`);
-                if (!response.ok) throw new Error('Error al cargar las metas.');
-                this.goals = await response.json();
+                // ✅ Lógica de GET limpia
+                this.goals = await api.get(`/api/courses/${this.slug}/goals`);
             } catch (err) {
                 this.showMessage(err.message, 'danger');
             } finally {
@@ -56,30 +50,11 @@ export default {
         },
 
         async updateGoals() {
-            // Estado de carga
             this.isUpdating = true;
-
-            // Lógica para actualizar las metas
             try {
-                const response = await fetch(`/api/courses/${this.slug}/goals`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(this.goals),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    let errorMessage = 'No se pudo guardar la actualización.';
-                    if (errorData.errors && Array.isArray(errorData.errors)) {
-                        errorMessage = errorData.errors.map(err => err.defaultMessage).join(', ');
-                    } else if (errorData.message) {
-                        errorMessage = errorData.message;
-                    }
-                    throw new Error(errorMessage);
-                }
-                
+                // ✅ Lógica de PUT limpia
+                await api.put(`/api/courses/${this.slug}/goals`, this.goals);
                 this.showMessage('Metas actualizadas correctamente.', 'success');
-
             } catch (err) {
                 this.showMessage(err.message, 'danger');
             } finally {
@@ -88,15 +63,11 @@ export default {
         },
 
         async handleGoalDelete(goal) {
-            // Estado de carga
             this.isDeleting[goal.id] = true;
-
-            // Lógica para eliminar la meta
             try {
-                const response = await fetch(`/api/courses/goals/${goal.id}`, {
-                    method: 'DELETE',
-                });
-                if (!response.ok) throw new Error('No se pudo eliminar la meta.');
+                // ✅ Lógica de DELETE limpia
+                await api.del(`/api/courses/goals/${goal.id}`);
+                
                 this.goals = this.goals.filter(g => g.id !== goal.id);
                 this.showMessage('Meta eliminada correctamente.', 'success');
             } catch (err) {
@@ -110,8 +81,7 @@ export default {
             this.goals.push(newGoal);
         }
     },
-    mounted() {        
-        // Inicia la carga de datos
+    mounted() {
         this.fetchGoals();
     },
 };
