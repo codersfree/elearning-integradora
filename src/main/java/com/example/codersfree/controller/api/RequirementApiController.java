@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/instructor/courses")
+@RequestMapping("/api/courses")
 public class RequirementApiController {
 
     @Autowired
@@ -23,6 +25,19 @@ public class RequirementApiController {
 
     @Autowired
     private RequirementService requirementService;
+
+    @GetMapping("/{slug}/requirements")
+    public ResponseEntity<?> getRequirement(@PathVariable String slug) {
+
+        Course course = courseService.findBySlug(slug);
+        
+        List<RequirementDto> requirements = course.getRequirements().stream()
+                    .sorted(Comparator.comparing(Requirement::getId))
+                    .map(r -> new RequirementDto(r.getId(), r.getName()))
+                    .collect(Collectors.toList());
+
+        return ResponseEntity.ok(requirements);
+    }
 
     @PostMapping("/{slug}/requirements")
     public ResponseEntity<?> createRequirement(
@@ -33,6 +48,7 @@ public class RequirementApiController {
         Requirement requirement = requirementService.createRequirement(course, requirementDto);
 
         RequirementDto created = new RequirementDto(requirement.getId(), requirement.getName());
+        
         return ResponseEntity.status(201).body(created);
     }
 

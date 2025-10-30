@@ -27,7 +27,7 @@ public class GoalApiController {
     private GoalService goalService;
 
     @GetMapping("/{slug}/goals")
-    public ResponseEntity<List<GoalDto>> getGoals(@PathVariable String slug) {
+    public ResponseEntity<List<GoalDto>> index(@PathVariable String slug) {
 
         Course course = courseService.findBySlug(slug);
         
@@ -40,7 +40,7 @@ public class GoalApiController {
     }
 
     @PostMapping("/{slug}/goals")
-    public ResponseEntity<?> createGoal(
+    public ResponseEntity<?> store(
         @PathVariable String slug,
         @Valid @RequestBody GoalDto goalDto) {
 
@@ -53,7 +53,7 @@ public class GoalApiController {
     }
 
     @PutMapping("/{slug}/goals")
-    public ResponseEntity<?> updateGoals(@PathVariable String slug,
+    public ResponseEntity<?> update(@PathVariable String slug,
             @RequestBody List<GoalDto> goals) {
  
         Course course = courseService.findBySlug(slug);
@@ -65,7 +65,7 @@ public class GoalApiController {
     }
 
     @DeleteMapping("/goals/{goalId}")
-    public ResponseEntity<?> deleteGoal(@PathVariable Long goalId) {
+    public ResponseEntity<?> delete(@PathVariable Long goalId) {
         
         goalService.deleteGoal(goalId);
         return ResponseEntity.noContent().build();

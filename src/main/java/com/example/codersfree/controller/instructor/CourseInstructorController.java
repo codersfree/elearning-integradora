@@ -232,25 +232,12 @@ public class CourseInstructorController {
     @GetMapping("/courses/{slug}/goals")
     public String getGoalsPage(
         @PathVariable String slug, 
-        Model model, 
-        RedirectAttributes redirectAttributes) {
+        Model model) {
         
-        try {
-            Course course = courseService.findBySlug(slug);
-            List<GoalDto> goals = course.getGoals().stream()
-                    .sorted(Comparator.comparing(Goal::getId))
-                    .map(g -> new GoalDto(g.getId(), g.getName()))
-                    .toList();
+        Course course = courseService.findBySlug(slug);
+        model.addAttribute("course", course);
 
-            model.addAttribute("goals", goals);
-            model.addAttribute("course", course);
-            
-            return "instructor/courses/goals";
-
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/instructor";
-        }
+        return "instructor/courses/goals";
     }
 
     @GetMapping("/courses/{slug}/requirements")
@@ -259,23 +246,10 @@ public class CourseInstructorController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        try {
-            Course course = courseService.findBySlug(slug);
+        Course course = courseService.findBySlug(slug);
+        model.addAttribute("course", course);
 
-            List<RequirementDto> requirements = course.getRequirements().stream()
-                    .sorted(Comparator.comparing(Requirement::getId))
-                    .map(r -> new RequirementDto(r.getId(), r.getName()))
-                    .collect(Collectors.toList());
-
-            model.addAttribute("requirements", requirements);
-            model.addAttribute("course", course);
-
-            return "instructor/courses/requirements";
-
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/instructor";
-        }
+        return "instructor/courses/requirements";
     }
 
     @GetMapping("/courses/{slug}/messages")

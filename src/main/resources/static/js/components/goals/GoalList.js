@@ -13,6 +13,7 @@ export default {
             required: true
         }
     },
+    
     emits: ['update:modelValue', 'delete-goal'],
     
     methods: {
