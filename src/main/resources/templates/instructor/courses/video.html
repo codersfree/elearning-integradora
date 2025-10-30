@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/instructor}">
+
+<head>
+    <!-- El título ahora es específico de la página de video -->
+    <title th:text="|Video: ${course.name}|">Video Promocional</title>
+    <meta name="description" content="Gestión del video promocional del curso.">
+</head>
+
+<body>
+
+<div layout:fragment="content">
+    
+    <!-- Layout de 2 Columnas (Menú Izquierda + Formulario Derecha) -->
+    <div class="row g-4">
+
+        <!-- Columna Izquierda: Menú de Navegación -->
+        <div class="col-lg-3">
+            <div th:replace="~{layouts/fragments/instructor/course-edit-nav :: navigation(course=${course}, activePage='video')}">
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Contenido de la Página -->
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Título de la sección -->
+                    <h1 class="h3 fw-bold mb-4">
+                        Video promocional
+                    </h1>
+
+                    <form th:action="@{/instructor/courses/{slug}/video(slug=${course.slug})}" 
+                          method="post" 
+                          enctype="multipart/form-data">
+
+
+                        <!-- Contenido (basado en tu imagen) -->
+                        <div class="row align-items-center">
+                            
+                            <div th:if="${course.videoPath == null or course.videoPath.isEmpty()}" class="col-md-5 text-center mb-4 mb-md-0">
+                                <img src="https://placehold.co/300x200/EBF0F5/8B9BBD?text=Video+Promo" 
+                                     class="img-fluid rounded" 
+                                     alt="Placeholder de video">
+                            </div>
+
+                            <div th:if="${course.videoPath != null and !course.videoPath.isEmpty()}" class="col-md-5 mb-4 mb-md-0">
+                                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                                    <video controls>
+                                        <source th:src="@{'/uploads/' + ${course.videoPath}}" type="video/mp4">
+                                        Tu navegador no soporta la etiqueta de video.
+                                    </video>
+                                </div>
+                            </div>
+                            
+                            <!-- Columna Derecha: Formulario de subida -->
+                            <div class="col-md-7">
+                                <p class="text-muted small">
+                                    Los estudiantes que ven un vídeo promocional bien hecho
+                                    tienen <strong>5 veces más probabilidades</strong> de matricularse en tu
+                                    curso. Esta estadística se multiplica por 10 si los videos son
+                                    excepcionalmente buenos.
+                                </p>
+
+                                <!-- Mensaje si no hay video (se muestra en la col derecha) -->
+                                <div th:if="${course.videoPath == null}" class="my-3">
+                                    <p class="text-danger fw-bold">
+                                        No ha seleccionado ningún vídeo
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="videoFile" class="form-label">
+                                        <span th:if="${course.videoPath != null}">Reemplazar</span>
+                                        <span th:if="${course.videoPath == null}">Agregar</span>
+                                        video (MP4)
+                                    </label>
+                                    <input class="form-control" type="file" id="videoFile" name="file" accept="video/mp4" required>
+                                </div>
+
+                                <!-- Botón de envío -->
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-dark btn-lg px-4">
+                                        Subir Video
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

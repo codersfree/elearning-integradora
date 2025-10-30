@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/instructor}">
+
+<head>
+    <title>Crear Nuevo Curso</title>
+    <meta name="description" content="Completa la información para crear un curso.">
+    <!-- Asumimos que layouts/instructor ahora carga Bootstrap CSS/JS -->
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <!-- Tarjeta para contener el formulario -->
+                <div class="card shadow-sm border-0 rounded-lg">
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- Título (con clases de Bootstrap) -->
+                        <h1 class="h3 text-center text-uppercase text-secondary fw-bold mb-4">
+                            COMPLETE ESTA INFORMACIÓN PARA CREAR UN CURSO
+                        </h1>
+
+                        <form th:action="@{/instructor/courses/create}" th:object="${courseDto}" method="post">
+
+                            <!-- Errores de validación -->
+                            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+                                <p class="fw-bold">Por favor, corrige los siguientes errores:</p>
+                                <ul>
+                                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                                </ul>
+                            </div>
+
+                            <!-- Campo: Nombre del curso -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre del curso</label>
+                                <input type="text" th:field="*{name}" id="name" placeholder="Nombre del curso"
+                                    class="form-control form-control-lg">
+                            </div>
+
+                            <!-- Campo: Slug -->
+                            <div class="mb-3">
+                                <label for="slug" class="form-label">Slug</label>
+                                <input type="text" th:field="*{slug}" id="slug" placeholder="Slug del curso"
+                                    class="form-control form-control-lg" required>
+                            </div>
+
+                            <!-- Fila de Selects (Categoría, Nivel, Precio) -->
+                            <div class="row g-3">
+
+                                <!-- Select: Categoría -->
+                                <div class="col-md-4">
+                                    <label for="category" class="form-label">Categoría</label>
+                                    <!-- ¡CORREGIDO! Apunta a categoryId -->
+                                    <select th:field="*{categoryId}" id="category" class="form-select form-select-lg"
+                                        required>
+                                        <option value="">Seleccione una categoría</option>
+                                        <option th:each="cat : ${categories}" th:value="${cat.id}"
+                                            th:text="${cat.name}"></option>
+                                    </select>
+                                </div>
+
+                                <!-- Select: Nivel -->
+                                <div class="col-md-4">
+                                    <label for="level" class="form-label">Nivel</label>
+                                    <!-- ¡CORREGIDO! Apunta a levelId -->
+                                    <select th:field="*{levelId}" id="level" class="form-select form-select-lg"
+                                        required>
+                                        <option value="">Seleccionar un nivel</option>
+                                        <option th:each="lvl : ${levels}" th:value="${lvl.id}" th:text="${lvl.name}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Select: Precio -->
+                                <div class="col-md-4">
+                                    <label for="price" class="form-label">Precio</label>
+                                    <!-- ¡CORREGIDO! Apunta a priceId -->
+                                    <select th:field="*{priceId}" id="price" class="form-select form-select-lg"
+                                        required>
+                                        <option value="">Seleccionar un precio</option>
+                                        <option th:each="prc : ${prices}" th:value="${prc.id}" th:text="${prc.name}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <!-- Botón de envío (con clases de Bootstrap) -->
+                            <div class="text-end mt-4">
+                                <button type="submit" class="btn btn-dark btn-lg px-4">
+                                    Crear Curso
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div> <!-- Fin .card -->
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

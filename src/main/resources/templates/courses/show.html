@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/app}">
+
+<head>
+
+    <title>Crea tu sistema de citas médicas con Laravel | Coders Free</title>
+
+    <!-- Plyr CSS -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
+    <style>
+        .plyr {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .accordion-button:not(.collapsed) {
+            color: #0c63e4;
+            background-color: #e7f1ff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main layout:fragment="content" class="container my-5">
+        <div class="row g-5">
+            <!-- Columna principal del contenido del curso -->
+            <div class="col-lg-8 order-lg-1 order-2">
+
+                <!-- Título y Video -->
+                <section class="mb-5">
+                    <h1 class="fw-bold h2 mb-2">Crea tu sistema de citas médicas con Laravel</h1>
+                    <p class="lead text-muted">Domina Laravel y Livewire construyendo un sistema de Citas, Doctores y
+                        Pacientes.</p>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between text-muted mb-3 small">
+                        <div class="d-flex align-items-center mb-2 me-3">
+                            <div class="text-warning">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <a href="#" class="ms-2 text-primary">(2 calificaciones)</a>
+                        </div>
+                        <p class="mb-2">Creado por <a href="#" class="text-primary">Victor Arana Flores</a></p>
+                    </div>
+                    <div>
+                        <video id="player" playsinline controls
+                            data-poster="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/portadas/crea-tu-sistema-de-citas-medicas-con-laravel.png">
+                            <source
+                                src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/promotional_videos/BghWc9ZK1j85815LfV7yIpqymb9Vur53qwICTZ2H.mp4"
+                                type="video/mp4" />
+                        </video>
+                    </div>
+                </section>
+
+                <!-- Objetivos -->
+                <section class="mb-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title h4 fw-bold mb-3">Objetivos del curso</h2>
+                            <div class="row g-3">
+                                <div class="col-md-6 d-flex">
+                                    <i class="fa-regular fa-circle-check text-primary fs-5 mt-1 me-2"></i>
+                                    <p>Desarrollar una aplicación web completa de Citas Médicas desde cero, aplicando
+                                        las mejores prácticas.</p>
+                                </div>
+                                <div class="col-md-6 d-flex">
+                                    <i class="fa-regular fa-circle-check text-primary fs-5 mt-1 me-2"></i>
+                                    <p>Implementar un sistema profesional de Roles y Permisos (Admin, Doctor, Paciente).
+                                    </p>
+                                </div>
+                                <div class="col-md-6 d-flex">
+                                    <i class="fa-regular fa-circle-check text-primary fs-5 mt-1 me-2"></i>
+                                    <p>Construir interfaces de usuario dinámicas y reactivas con Livewire 3.</p>
+                                </div>
+                                <div class="col-md-6 d-flex">
+                                    <i class="fa-regular fa-circle-check text-primary fs-5 mt-1 me-2"></i>
+                                    <p>Diseñar y modelar la base de datos de una aplicación real con Eloquent ORM.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Temario -->
+                <section class="mb-5">
+                    <h2 class="h4 fw-bold mb-3">Temario del curso</h2>
+                    <div class="accordion" id="courseAccordion">
+                        <!-- Item de Acordeón -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <strong>Introduction</strong>
+                                    <span class="ms-auto me-2 text-muted small">4 clases</span>
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                                data-bs-parent="#courseAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-play-circle me-2 text-muted"></i>Crear proyecto
+                                                laravel</span>
+                                            <span class="badge bg-light text-dark">02:16</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-play-circle me-2 text-muted"></i>Instalar
+                                                Jetstream</span>
+                                            <span class="badge bg-light text-dark">04:38</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item de Acordeón -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <strong>Configuración inicial</strong>
+                                    <span class="ms-auto me-2 text-muted small">12 clases</span>
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                data-bs-parent="#courseAccordion">
+                                <div class="accordion-body">
+                                    ...
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item de Acordeón -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    <strong>Gestión de roles</strong>
+                                    <span class="ms-auto me-2 text-muted small">10 clases</span>
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                                data-bs-parent="#courseAccordion">
+                                <div class="accordion-body">
+                                    ...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Requisitos -->
+                <section class="mb-5">
+                    <h2 class="h4 fw-bold mb-3">Requisitos del curso</h2>
+                    <ul class="list-group">
+                        <li class="list-group-item"><i class="fas fa-check me-2 text-success"></i>Es necesario tener
+                            conocimientos de PHP y Programación Orientada a Objetos.</li>
+                        <li class="list-group-item"><i class="fas fa-check me-2 text-success"></i>Se asume que ya
+                            conoces los fundamentos de Laravel.</li>
+                        <li class="list-group-item"><i class="fas fa-check me-2 text-success"></i>Debes tener una
+                            comprensión básica de HTML y CSS.</li>
+                    </ul>
+                </section>
+
+                <!-- Descripción -->
+                <section class="mb-5">
+                    <h2 class="h4 fw-bold mb-3">Descripción</h2>
+                    <p>¿Estás listo para dejar atrás los tutoriales básicos y construir una aplicación web completa,
+                        robusta y profesional que puedas añadir con orgullo a tu portafolio? Si tienes conocimientos de
+                        Laravel y quieres dar el salto a la creación de sistemas complejos y del mundo real, este es el
+                        curso definitivo para ti.</p>
+                    <p>En "Crea tu sistema de citas médicas con Laravel", no solo aprenderás teoría. Juntos, y paso a
+                        paso, construiremos desde cero un <strong>Sistema de Citas Médicas</strong> totalmente
+                        funcional.</p>
+                </section>
+
+
+                <!-- Reseñas -->
+                <section>
+                    <h2 class="h4 fw-bold mb-4">Reseña de los estudiantes</h2>
+                    <div class="card mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-3 d-flex justify-content-center align-items-center p-3">
+                                <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/profile-photos/Pz6pfaUyuG9aydlgXw5C93FwhxYGDekIG7cKSjoJ.jpg"
+                                    class="img-fluid rounded-circle" alt="Avatar"
+                                    style="width: 100px; height: 100px; object-fit: cover;">
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h5 class="card-title">Mrdev</h5>
+                                    <p class="card-text text-warning small">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                            class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                            class="fas fa-star"></i>
+                                    </p>
+                                    <p class="card-text">"Extraordinario amigo muchas gracias por tu contenido. Por el
+                                        simple hecho de ver como te quedo esta plataforma se ve que realmente sabes."
+                                    </p>
+                                    <p class="card-text"><small class="text-muted">Hace 1 mes</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+            </div>
+
+            <!-- Columna lateral de compra -->
+            <div class="col-lg-4 order-lg-2 order-1">
+                <div class="card position-sticky" style="top: 6rem;">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <span class="h2 fw-bold">10.00 USD</span>
+                            <span class="ms-2 text-danger text-decoration-line-through">35.00 USD</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary">Añadir al carrito</button>
+                            <button class="btn btn-danger">Comprar ahora</button>
+                        </div>
+                        <hr>
+                        <p class="fw-bold">Detalle del curso:</p>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="far fa-calendar-alt me-2"></i>Última actualización: 04/08/2025
+                            </li>
+                            <li class="mb-2"><i class="far fa-clock me-2"></i>Duración: 16.4 horas</li>
+                            <li class="mb-2"><i class="fas fa-chart-line me-2"></i>Nivel: Intermedio</li>
+                            <li class="mb-2"><i class="fas fa-star me-2"></i>Calificación: 5</li>
+                            <li class="mb-2"><i class="fas fa-infinity me-2"></i>Acceso de por vida</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div layout:fragment="js">
+        <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const player = new Plyr('#player');
+            });
+        </script>
+    </div>
+
+</body>
+
+</html>

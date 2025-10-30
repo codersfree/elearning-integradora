@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/instructor}">
+
+<head>
+    <title th:text="|Requisitos: ${course.name}|">Requisitos del Curso</title>
+    <meta name="description" content="Requisitos del curso.">
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="row g-4">
+        <!-- Menú lateral -->
+        <div class="col-lg-3">
+            <div th:replace="~{layouts/fragments/instructor/course-edit-nav :: navigation(course=${course}, activePage='requirements')}"></div>
+        </div>
+
+        <!-- Contenido -->
+        <div class="col-lg-9">
+            <div x-data="requirementManager()">
+
+                <form @submit.prevent="updateRequirements">
+
+                    <div class="card shadow-sm border-0 rounded-lg">
+                        <div class="card-body p-4 p-md-5">
+
+                            <h1 class="h3 fw-bold mb-0">Requisitos del curso</h1>
+                            <p class="text-muted mb-0">
+                                Estos son los requisitos que los estudiantes deben cumplir antes de tomar tu curso.
+                            </p>
+
+                            <hr class="my-4">
+
+                            <!-- Lista dinámica -->
+                            <template x-for="(requirement, index) in requirements" :key="requirement.id || ('new_' + index)">
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                        <input type="hidden" :name="'requirements[' + index + '].id'" x-model="requirement.id">
+                                        <input type="text" class="form-control form-control-lg"
+                                               :name="'requirements[' + index + '].name'"
+                                               x-model="requirement.name"
+                                               placeholder="Nombre del requisito" required>
+                                        <button @click.prevent="removeRequirement(index)"
+                                                class="btn btn-outline-danger d-flex align-items-center"
+                                                type="button"
+                                                :disabled="isDeleting[index]">
+                                            <i class="fas fa-trash" x-show="!isDeleting[index]"></i>
+                                            <span x-show="isDeleting[index]"
+                                                  class="spinner-border spinner-border-sm" role="status"
+                                                  aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="requirements.length === 0">
+                                <p class="text-muted text-center my-3">Aún no has agregado ningún requisito.</p>
+                            </template>
+
+                            <div class="text-end mt-4">
+                                <button type="button" class="btn btn-dark btn-lg px-4"
+                                        @click.prevent="updateRequirements"
+                                        :disabled="isUpdating">
+                                    <span x-show="!isUpdating">Actualizar Requisitos</span>
+                                    <span x-show="isUpdating" class="spinner-border spinner-border-sm"
+                                          role="status" aria-hidden="true"></span>
+                                    <span x-show="isUpdating"> Actualizando...</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Contenedor global de mensajes -->
+                <div x-show="message"
+                     x-transition
+                     class="alert alert-dismissible fade show mt-4"
+                     :class="messageType === 'success' ? 'alert-success' : 'alert-danger'"
+                     role="alert">
+                    <span x-text="message"></span>
+                    <button type="button" class="btn-close" @click="message = null" aria-label="Close"></button>
+                </div>
+
+                <!-- Nuevo requisito -->
+                <div class="card shadow-sm border-0 rounded-lg mt-4 bg-light">
+                    <div class="card-body p-4 p-md-5">
+                        <label for="newRequirementInput" class="form-label fw-bold">
+                            Nuevo requisito
+                        </label>
+
+                        <div class="input-group mb-3">
+                            <input id="newRequirementInput" type="text" class="form-control form-control-lg"
+                                   placeholder="Ingrese el nombre del requisito"
+                                   x-model="newRequirementName"
+                                   @keydown.enter.prevent="addNewRequirement()">
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" class="btn btn-danger btn-lg px-4 me-2"
+                                    @click="newRequirementName = ''">Cancelar</button>
+                            <button type="button" class="btn btn-dark btn-lg px-4"
+                                    @click.prevent="addNewRequirement()"
+                                    :disabled="newRequirementName.trim() === '' || isLoading">
+                                <span x-show="!isLoading">Agregar</span>
+                                <span x-show="isLoading" class="spinner-border spinner-border-sm"
+                                      role="status" aria-hidden="true"></span>
+                                <span x-show="isLoading"> Agregando...</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Alpine.js -->
+<script layout:fragment="js" th:inline="javascript">
+    function requirementManager() {
+        return {
+            requirements: /*[[${requirements}]]*/ [],
+            newRequirementName: '',
+
+            message: null,
+            messageType: null,
+
+            isLoading: false,
+            isUpdating: false,
+            isDeleting: {},
+
+            api: {
+                base: /*[[@{/api/instructor/courses/{slug}/requirements(slug=${course.slug})}]]*/ '',
+                delete: /*[[@{/api/instructor/courses/requirements/}]]*/ ''
+            },
+
+            showMessage(text, type = 'success', duration = 3000) {
+                this.message = text;
+                this.messageType = type;
+                if (duration) setTimeout(() => this.message = null, duration);
+            },
+
+            async parseErrorResponse(response) {
+                try {
+                    const data = await response.json();
+
+                    // Manejar validación de Spring Boot
+                    if (data.errors && Array.isArray(data.errors)) {
+                        return data.errors.map(err => err.defaultMessage).join(', ');
+                    }
+
+                    // Otros errores
+                    if (data.message) return data.message;
+                    if (data.error) return data.error;
+
+                    return JSON.stringify(data);
+                } catch {
+                    return await response.text();
+                }
+            },
+
+            async apiRequest(url, { method = 'GET', body = null, successMessage = null } = {}) {
+                try {
+                    const response = await fetch(url, {
+                        method,
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        ...(body && { body: JSON.stringify(body) })
+                    });
+
+                    if (!response.ok) {
+                        const errorMessage = await this.parseErrorResponse(response);
+                        this.showMessage(errorMessage || 'Error en la operación', 'error', 5000);
+                        throw new Error(errorMessage);
+                    }
+
+                    const data = response.status === 204 ? null : await response.json();
+
+                    if (successMessage) {
+                        this.showMessage(successMessage, 'success');
+                    }
+
+                    return data;
+
+                } catch (e) {
+                    console.error(e);
+                    if (!this.message) {
+                        this.showMessage(e.message || 'Error en la operación', 'error', 5000);
+                    }
+                    throw e;
+                }
+            },
+
+            async addNewRequirement() {
+                if (!this.newRequirementName.trim()) return;
+                this.isLoading = true;
+
+                try {
+                    const requirement = await this.apiRequest(this.api.base, {
+                        method: 'POST',
+                        body: { name: this.newRequirementName },
+                        successMessage: 'Requisito creado correctamente.'
+                    });
+
+                    this.requirements.push(requirement);
+                    this.newRequirementName = '';
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+
+            async updateRequirements() {
+                this.isUpdating = true;
+                try {
+                    await this.apiRequest(this.api.base, {
+                        method: 'PUT',
+                        body: this.requirements,
+                        successMessage: 'Requisitos actualizados correctamente.'
+                    });
+                } finally {
+                    this.isUpdating = false;
+                }
+            },
+
+            async removeRequirement(index) {
+                const requirement = this.requirements[index];
+                if (!requirement?.id) return this.requirements.splice(index, 1);
+
+                this.isDeleting[index] = true;
+
+                try {
+                    await this.apiRequest(this.api.delete + requirement.id, {
+                        method: 'DELETE',
+                        successMessage: 'Requisito eliminado correctamente.'
+                    });
+                    this.requirements.splice(index, 1);
+                } finally {
+                    this.isDeleting[index] = false;
+                }
+            }
+        };
+    }
+</script>
+
+</body>
+</html>

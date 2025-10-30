@@ -1,0 +1,48 @@
+<nav th:fragment="navigation" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+
+        <!-- Logo -->
+        <a class="navbar-brand" href="/">
+            <img style="height: 2rem; width: auto;"
+                 src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/companies/logos/rectangle_logo.png"
+                 alt="Coders Free">
+        </a>
+
+        <!-- Botón Hamburguesa para móvil -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Contenido del Menú Colapsable -->
+        <div class="collapse navbar-collapse" id="mainNavbar">
+
+            <!-- Enlaces de Navegación a la Izquierda -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/instructor}">Cursos</a>
+                </li>
+            </ul>
+
+            <!-- Iconos y Menú de Usuario a la Derecha -->
+            <div class="d-flex align-items-center">
+                <!-- Menú Desplegable de Usuario (Bootstrap) -->
+                <div class="dropdown">
+                    <button class="btn border-0" type="button" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="far fa-user-circle fs-4 text-secondary"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                        <li>
+                            <form th:action="@{/logout}" method="post" style="display: inline;">
+                                <button type="submit" class="dropdown-item">
+                                    Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</nav>

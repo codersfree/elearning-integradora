@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>401 - No Autorizado</title>
+    
+    <!-- 1. Cargar Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Cargar la fuente Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 3. Configuración de Tailwind para usar la fuente Inter -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 4. Estilos base -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center min-h-screen p-6">
+
+    <!-- Contenedor principal centrado -->
+    <div class="text-center max-w-md w-full">
+        
+        <!-- Icono (SVG en línea de Lucide Icons: LockClosed) -->
+        <div class="mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-24 w-24 text-amber-500">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+        </div>
+
+        <!-- Texto de error principal -->
+        <h1 class="text-9xl font-extrabold text-amber-600 dark:text-amber-500 tracking-tighter">
+            401
+        </h1>
+        
+        <!-- Título de la página -->
+        <p class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+            Acceso No Autorizado
+        </p>
+        
+        <!-- Mensaje de ayuda -->
+        <p class="mt-4 text-base text-gray-600 dark:text-gray-400">
+            Necesitas iniciar sesión para ver esta página. Por favor, ingresa tus credenciales o vuelve al inicio.
+        </p>
+
+        <!-- Botón de llamada a la acción (CTA) -->
+        <div class="mt-10 flex items-center justify-center gap-x-4">
+            <a th:href="@{/}"
+               class="rounded-md bg-amber-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-colors duration-200">
+                Volver al Inicio
+            </a>
+            <!-- Este botón podría enlazar a la página de login -->
+            <a th:href="@{/login}"
+               class="rounded-md border border-amber-600 px-4 py-3 text-sm font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-colors duration-200">
+                Iniciar Sesión
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

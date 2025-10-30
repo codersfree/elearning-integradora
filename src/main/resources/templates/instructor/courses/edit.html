@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/instructor}">
+
+<head>
+    <!-- Mantenemos 'course' para el título, ya que 'courseDto' no es la entidad completa -->
+    <title th:text="|Editando: ${course.name}|">Editar Curso</title>
+    <meta name="description" content="Edición de la información del curso.">
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+
+        <!-- Layout de 2 Columnas (Menú Izquierda + Formulario Derecha) -->
+        <div class="row g-4">
+
+            <!-- Columna Izquierda: Menú de Navegación -->
+            <div class="col-lg-3">
+                <div
+                    th:replace="~{layouts/fragments/instructor/course-edit-nav :: navigation(course=${course}, activePage='info')}">
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Formulario de Información -->
+            <div class="col-lg-9">
+                <div class="card shadow-sm border-0 rounded-lg">
+                    <div class="card-body p-4 p-md-5">
+
+                        <h1 class="h4 text-dark fw-bold mb-4">
+                            Información del curso
+                        </h1>
+
+                        <form th:action="@{/instructor/courses/{slug}/edit(slug=${course.slug})}"
+                            th:object="${courseDto}" method="post" enctype="multipart/form-data">
+
+                            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+                                <p class="fw-bold">Por favor, corrige los siguientes errores:</p>
+                                <ul>
+                                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}" />
+                                </ul>
+                            </div>
+
+                            <!-- 1. Título del curso -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-semibold">Título del curso</label>
+                                <input type="text" th:field="*{name}" id="name" class="form-control"
+                                    th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                                    placeholder="Ej: Curso de Laravel desde cero">
+                                <!-- Mensaje de error específico para este campo -->
+                                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="invalid-feedback">
+                                </div>
+                            </div>
+
+                            <!-- 2. Slug del curso -->
+                            <div class="mb-3">
+                                <label for="slug" class="form-label fw-semibold">Slug del curso</label>
+                                <input type="text" th:field="*{slug}" id="slug" class="form-control"
+                                    th:classappend="${#fields.hasErrors('slug')} ? 'is-invalid' : ''"
+                                    placeholder="Ej: curso-de-laravel-desde-cero">
+                                <div th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}" class="invalid-feedback">
+                                </div>
+                                <div class="form-text">El slug es la URL amigable (sin espacios ni acentos).</div>
+                            </div>
+
+                            <!-- 3. Resumen -->
+                            <div class="mb-3">
+                                <label for="summary" class="form-label fw-semibold">Resumen</label>
+                                <textarea th:field="*{summary}" id="summary" rows="3" class="form-control"
+                                    th:classappend="${#fields.hasErrors('summary')} ? 'is-invalid' : ''"
+                                    placeholder="Un resumen breve del curso..."></textarea>
+                                <div th:if="${#fields.hasErrors('summary')}" th:errors="*{summary}"
+                                    class="invalid-feedback"></div>
+                            </div>
+
+                            <!-- 4. Descripción -->
+                            <div class="mb-3">
+                                <label for="description" class="form-label fw-semibold">Descripción del curso</label>
+                                <textarea th:field="*{description}" id="description" rows="6" class="form-control"
+                                    th:classappend="${#fields.hasErrors('description')} ? 'is-invalid' : ''"
+                                    placeholder="Una descripción detallada de lo que se aprenderá..."></textarea>
+                                <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}"
+                                    class="invalid-feedback"></div>
+                            </div>
+
+                            <!-- 5. Selectores (Categoría, Nivel, Precio) -->
+                            <div class="row g-3 mb-4">
+                                <!-- Categoría -->
+                                <div class="col-md-4">
+                                    <label for="category" class="form-label fw-semibold">Categorías</label>
+                                    <!-- CAMBIO: th:field ahora apunta a 'categoryId' (el Long ID) -->
+                                    <select th:field="*{categoryId}" id="category" class="form-select"
+                                        th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid' : ''">
+                                        <option value="">Seleccione una categoría</option>
+                                        <option th:each="cat : ${categories}" th:value="${cat.id}"
+                                            th:text="${cat.name}">Desarrollo Web</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"
+                                        class="invalid-feedback"></div>
+                                </div>
+                                <!-- Nivel -->
+                                <div class="col-md-4">
+                                    <label for="level" class="form-label fw-semibold">Nivel</label>
+                                    <!-- CAMBIO: th:field ahora apunta a 'levelId' (el Long ID) -->
+                                    <select th:field="*{levelId}" id="level" class="form-select"
+                                        th:classappend="${#fields.hasErrors('levelId')} ? 'is-invalid' : ''">
+                                        <option value="">Seleccionar un nivel</option>
+                                        <option th:each="lvl : ${levels}" th:value="${lvl.id}" th:text="${lvl.name}">
+                                            Nivel Básico</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('levelId')}" th:errors="*{levelId}"
+                                        class="invalid-feedback"></div>
+                                </div>
+                                <!-- Precio -->
+                                <div class="col-md-4">
+                                    <label for="price" class="form-label fw-semibold">Precio</label>
+                                    <!-- CAMBIO: th:field ahora apunta a 'priceId' (el Long ID) -->
+                                    <select th:field="*{priceId}" id="price" class="form-select"
+                                        th:classappend="${#fields.hasErrors('priceId')} ? 'is-invalid' : ''">
+                                        <option value="">Seleccionar un precio</option>
+                                        <option th:each="p : ${prices}" th:value="${p.id}" th:text="${p.name}">Gratis
+                                        </option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('priceId')}" th:errors="*{priceId}"
+                                        class="invalid-feedback"></div>
+                                </div>
+                            </div>
+
+                            <hr class="my-5">
+
+                            <!-- 6. Imagen del curso -->
+                            <h2 class="h5 text-dark fw-bold mb-3">Imagen del curso</h2>
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-5">
+                                    <!-- Usamos 'course.image' (de la entidad) para mostrar la imagen actual -->
+                                    <!-- <img th:src="${course.image}" alt="Imagen actual" class="img-fluid rounded border"> -->
+                                    <div class="ratio ratio-16x9">
+                                        <img th:src="${course.image}" 
+                                            alt="Imagen del Curso" 
+                                            class="img-fluid"
+                                            style="object-fit: cover;">
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <p class="small text-muted">
+                                        Carga la imagen de tu curso aquí. Directrices: 750 x 422 píxeles;
+                                        formato .jpg, .png; y sin texto en la imagen.
+                                    </p>
+                                    <div class="input-group">
+                                        <input type="file" name="file" class="form-control" id="imageUpload">
+                                    </div>
+                                    <div class="form-text">
+                                        Deja este campo vacío si no deseas cambiar la imagen actual.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 7. Botón de Guardar -->
+                            <div class="text-end mt-5">
+                                <button type="submit" class="btn btn-dark btn-lg px-5">
+                                    Guardar Cambios
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

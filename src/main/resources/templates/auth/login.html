@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Codersfree</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Fuente Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .login-card {
+      max-width: 960px;
+    }
+
+    .login-image-panel {
+      background-image: url('/img/login.png');
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+
+
+<body class="d-flex align-items-center justify-content-center min-vh-100 bg-light p-3">
+
+  <div class="card w-100 border-0 rounded-4 shadow overflow-hidden login-card">
+    <div class="row g-0">
+
+      <div class="col-lg-6 d-none d-lg-block login-image-panel">
+      </div>
+
+      <div class="col-lg-6 p-4 p-sm-5">
+
+        <header class="text-center mb-4">
+          <h1 class="fw-bold text-dark">
+            <a href="/" class="text-decoration-none text-dark">
+              Codersfree
+            </a>
+          </h1>
+          <p class="text-muted mb-0">¡Bienvenido de nuevo!</p>
+        </header>
+
+        <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+          <span>
+            Email o contraseña incorrectos.
+          </span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="d-grid gap-3 mb-4">
+          <button class="btn btn-light border w-100 d-flex align-items-center justify-content-center p-3 fw-medium rounded-3">
+            <svg class="me-2" width="20" height="20" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M533.5 278.4c0-17.4-1.6-34.1-4.6-50.4H272v95.5h146.9c-6.3 34-25 62.8-53.4 82v68h86.2c50.4-46.4 81.8-114.7 81.8-195.1z"
+                fill="#4285F4" />
+              <path
+                d="M272 544.3c72.6 0 133.7-24 178.3-65.1l-86.2-68c-24 16.1-54.7 25.6-92.1 25.6-70.8 0-130.8-47.8-152.3-112.2h-89.7v70.7c44.5 88 135.2 149 242 149z"
+                fill="#34A853" />
+              <path
+                d="M119.7 324c-10.4-30.9-10.4-64.5 0-95.4v-70.7h-89.7C7.9 206 0 239.6 0 274s7.9 68 30 95.4l89.7-70.4z"
+                fill="#FBBC05" />
+              <path
+                d="M272 107c39.5-.6 77.3 14 106.1 40.4l79.4-79.4C405.1 24 343.9-.6 272 0 165.2 0 74.5 61 30 149l89.7 70c21.5-64.4 81.5-112 152.3-112z"
+                fill="#EA4335" />
+            </svg>
+            Inicia sesión con Google
+          </button>
+
+          <button class="btn btn-light border w-100 d-flex align-items-center justify-content-center p-3 fw-medium rounded-3 text-primary">
+            <i class="fab fa-facebook-f text-primary me-2"></i>
+            Inicia sesión con Facebook
+          </button>
+        </div>
+
+        <div class="d-flex align-items-center mb-4">
+          <hr class="flex-grow-1">
+          <span class="mx-2 text-muted small fw-semibold text-uppercase">O inicia sesión con tu email</span>
+          <hr class="flex-grow-1">
+        </div>
+
+        <form th:action="@{/login}" method="post" class="mb-4">
+          <div class="mb-3">
+            <label for="email" class="form-label fw-medium">Correo</label>
+            <input type="email" id="email" name="username" class="form-control" placeholder="tu@correo.com" required>
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <label for="password" class="form-label fw-medium">Contraseña</label>
+              <a href="#" class="small text-decoration-none text-primary">¿Olvidaste tu contraseña?</a>
+            </div>
+            <input type="password" id="password" name="password" class="form-control"
+              placeholder="Ingresa tu contraseña" required>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" value="" id="remember-me" checked>
+            <label class="form-check-label" for="remember-me">
+              Mantener sesión activa
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+            Iniciar sesión
+          </button>
+        </form>
+
+        <div class="text-center">
+          <p class="text-muted small mb-0">
+            ¿NO TIENES CUENTA?
+            <a th:href="@{/register}" class="text-primary fw-semibold text-uppercase text-decoration-none ls-2">
+              REGÍSTRATE
+            </a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

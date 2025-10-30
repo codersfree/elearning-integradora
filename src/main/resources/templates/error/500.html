@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Error Interno del Servidor</title>
+    
+    <!-- 1. Cargar Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Cargar la fuente Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 3. Configuración de Tailwind para usar la fuente Inter -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 4. Estilos base -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center min-h-screen p-6">
+
+    <!-- Contenedor principal centrado -->
+    <div class="text-center max-w-md w-full">
+        
+        <!-- Icono (SVG en línea de Heroicons: ServerStackIcon) -->
+        <div class="mb-4">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-24 w-24 text-red-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.115 5.19l.319 1.913A6 6 0 0012 12h0a6 6 0 005.566-4.897l.319-1.913A2.25 2.25 0 0115.319 3h-6.638a2.25 2.25 0 01-2.566 2.19z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 12v5.25A2.25 2.25 0 019.75 19.5h-3.596a2.25 2.25 0 01-2.122-2.903l.043-.105A2.25 2.25 0 003.25 12.25v0c0-1.01.626-1.903 1.5-2.205l.043-.105A2.25 2.25 0 017.014 7.5h9.972a2.25 2.25 0 012.122 2.903l.043.105c.874.302 1.5.19 1.5 2.205v0c0 1.01-.626 1.903-1.5 2.205l-.043.105a2.25 2.25 0 01-2.122 2.903h-3.596A2.25 2.25 0 0112 17.25V12z" />
+            </svg>
+        </div>
+
+        <!-- Texto de error principal -->
+        <h1 class="text-9xl font-extrabold text-red-600 dark:text-red-500 tracking-tighter">
+            500
+        </h1>
+        
+        <!-- Título de la página -->
+        <p class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+            Error Interno del Servidor
+        </p>
+        
+        <!-- Mensaje de ayuda -->
+        <p class="mt-4 text-base text-gray-600 dark:text-gray-400">
+            ¡Ups! Algo salió mal de nuestro lado. Ya estamos trabajando para solucionarlo. Por favor, intenta recargar la página en unos minutos.
+        </p>
+
+        <!-- Botón de llamada a la acción (CTA) -->
+        <div class="mt-10 flex items-center justify-center gap-x-4">
+            <a th:href="@{/}"
+               class="rounded-md bg-red-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 transition-colors duration-200">
+                Volver al Inicio
+            </a>
+            <!-- Recarga la página actual -->
+            <a href="javascript:location.reload()" 
+               class="rounded-md border border-red-600 px-4 py-3 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 transition-colors duration-200">
+                Recargar Página
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

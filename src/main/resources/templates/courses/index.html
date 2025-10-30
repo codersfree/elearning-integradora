@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/app}">
+
+<head>
+
+    <title>Cursos de desarrollo web | Coders Free</title>    
+
+    <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .course-list-item {
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .course-list-item:hover {
+            background-color: #fff;
+            box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+            border-radius: .375rem;
+        }
+
+        .course-list-item img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        @media (min-width: 576px) {
+            .course-list-item img {
+                width: 256px; /* Ancho fijo para la imagen en pantallas sm y superiores */
+            }
+        }
+        
+    </style>
+</head>
+
+<body>
+
+
+    <div layout:fragment="content">
+
+        <div class="container my-5">
+            <div class="row">
+                <!-- Sidebar de Filtros (visible en pantallas grandes) -->
+                <aside class="col-lg-3 d-none d-lg-block">
+                    <h4 class="mb-3">Filtros</h4>
+                    <div class="mb-4">
+                        <label for="sort-by" class="form-label fw-semibold">Ordenar por</label>
+                        <select class="form-select" id="sort-by">
+                            <option selected>Más recientes</option>
+                            <option value="1">Más alumnos</option>
+                            <option value="2">Mejor calificado</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="fw-semibold">Categorías</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="cat1">
+                            <label class="form-check-label" for="cat1">Desarrollo web</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="cat2">
+                            <label class="form-check-label" for="cat2">Diseño web</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="fw-semibold">Niveles</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="level1">
+                            <label class="form-check-label" for="level1">Nivel básico</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="level2">
+                            <label class="form-check-label" for="level2">Nivel intermedio</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="level3">
+                            <label class="form-check-label" for="level3">Nivel avanzado</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="level4">
+                            <label class="form-check-label" for="level4">Todos los niveles</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="fw-semibold">Precios</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="price1">
+                            <label class="form-check-label" for="price1">Gratis</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="price2">
+                            <label class="form-check-label" for="price2">De pago</label>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-100">Aplicar filtros</button>
+                </aside>
+
+                <!-- Contenido Principal: Cursos -->
+                <div class="col-lg-9">
+                    <!-- Botón de filtros para móviles -->
+                    <div class="d-grid d-lg-none mb-4">
+                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters" aria-controls="offcanvasFilters">
+                            <i class="fas fa-filter me-2"></i> Mostrar Filtros
+                        </button>
+                    </div>
+
+
+                    <!-- Barra de Búsqueda -->
+                    <div class="input-group mb-4">
+                        <input type="text" class="form-control" placeholder="Buscar curso...">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+
+                    <!-- Lista de Cursos -->
+                    <div class="list-unstyled">
+                        <!-- Ejemplo de un curso -->
+                        <a href="/courses/detalle" class="text-decoration-none text-dark">
+                            <div class="d-block d-sm-flex p-2 mb-3 course-list-item">
+                                <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/portadas/crea-tu-sistema-de-citas-medicas-con-laravel.png" class="rounded" alt="Crea tu sistema de citas médicas con Laravel">
+                                <div class="flex-grow-1 mt-2 mt-sm-0 ms-sm-4">
+                                    <h5 class="mb-1">Crea tu sistema de citas médicas con Laravel</h5>
+                                    <p class="text-muted small mb-1">Domina Laravel y Livewire construyendo un sistema de Citas, Doctores y Pacientes.</p>
+                                    <p class="text-muted small mb-2">Prof: Victor Arana Flores</p>
+                                    <div>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <span class="text-muted small ms-1">(5)</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 mt-sm-0 ms-sm-4 text-sm-end">
+                                    <p class="fw-bold fs-5 mb-0">10.00 USD</p>
+                                    <p class="text-muted text-decoration-line-through small">35.00 USD</p>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- Ejemplo de un curso -->
+                        <a href="/courses/detalle" class="text-decoration-none text-dark">
+                            <div class="d-block d-sm-flex p-2 mb-3 course-list-item">
+                                <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/portadas/crea-paquetes-laravel-php-gestor-de-temas-desde-cero.png" class="rounded" alt="Aprende crear paquetes Laravel">
+                                <div class="flex-grow-1 mt-2 mt-sm-0 ms-sm-4">
+                                    <h5 class="mb-1">Aprende crear paquetes Laravel: Gestor de Temas desde Cero</h5>
+                                    <p class="text-muted small mb-1">Domina Laravel: Paquetes, Temas, Artisan y PHP 8+</p>
+                                    <p class="text-muted small mb-2">Prof: Victor Arana Flores</p>
+                                    <div>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <span class="text-muted small ms-1">(5)</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 mt-sm-0 ms-sm-4 text-sm-end">
+                                    <p class="fw-bold fs-5 mb-0">10.00 USD</p>
+                                    <p class="text-muted text-decoration-line-through small">35.00 USD</p>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- Ejemplo de un curso (Gratis) -->
+                        <a href="/courses/detalle" class="text-decoration-none text-dark">
+                            <div class="d-block d-sm-flex p-2 mb-3 course-list-item">
+                                <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/portadas/fundamentos-de-programacion-con-pseint.jpg" class="rounded" alt="Fundamentos de Programación">
+                                <div class="flex-grow-1 mt-2 mt-sm-0 ms-sm-4">
+                                    <h5 class="mb-1">Fundamentos de Programación en pseudocodigo con PSeInt</h5>
+                                    <p class="text-muted small mb-1">Domina los Fundamentos de Programación con PSeInt en este curso de alto rendimiento.</p>
+                                    <p class="text-muted small mb-2">Prof: Victor Arana Flores</p>
+                                    <div>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                        <span class="text-muted small ms-1">(4.97)</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 mt-sm-0 ms-sm-4 text-sm-end">
+                                    <p class="fw-bold fs-5 mb-0 text-success">Gratis</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Paginación -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mt-5">
+                            <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                        </ul>
+                    </nav>
+
+                </div>
+            </div>
+        </div>
+        
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilters" aria-labelledby="offcanvasFiltersLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasFiltersLabel">Filtros</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <!-- Contenido de los filtros (igual que el sidebar) -->
+                <div class="mb-4">
+                    <label for="sort-by-mobile" class="form-label fw-semibold">Ordenar por</label>
+                    <select class="form-select" id="sort-by-mobile">
+                        <option selected>Más recientes</option>
+                        <option value="1">Más alumnos</option>
+                        <option value="2">Mejor calificado</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <p class="fw-semibold">Categorías</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="cat1-mobile">
+                        <label class="form-check-label" for="cat1-mobile">Desarrollo web</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="cat2-mobile">
+                        <label class="form-check-label" for="cat2-mobile">Diseño web</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p class="fw-semibold">Niveles</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="level1-mobile">
+                        <label class="form-check-label" for="level1-mobile">Nivel básico</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="level2-mobile">
+                        <label class="form-check-label" for="level2-mobile">Nivel intermedio</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="level3-mobile">
+                        <label class="form-check-label" for="level3-mobile">Nivel avanzado</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="level4-mobile">
+                        <label class="form-check-label" for="level4-mobile">Todos los niveles</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p class="fw-semibold">Precios</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="price1-mobile">
+                        <label class="form-check-label" for="price1-mobile">Gratis</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="price2-mobile">
+                        <label class="form-check-label" for="price2-mobile">De pago</label>
+                    </div>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary">Aplicar filtros</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

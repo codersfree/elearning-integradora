@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/instructor}">
+
+<head>
+    <!-- Mantenemos 'course' para el título, ya que 'courseDto' no es la entidad completa -->
+    <title th:text="|Editando: ${course.name}|">Editar Curso</title>
+    <meta name="description" content="Edición de la información del curso.">
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+
+        <!-- Layout de 2 Columnas (Menú Izquierda + Formulario Derecha) -->
+        <div class="row g-4">
+
+            <!-- Columna Izquierda: Menú de Navegación -->
+            <div class="col-lg-3">
+                <div
+                    th:replace="~{layouts/fragments/instructor/course-edit-nav :: navigation(course=${course}, activePage='messages')}">
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Formulario de Información -->
+            <div class="col-lg-9">
+                <div class="card shadow-sm border-0 rounded-lg">
+                    <div class="card-body p-4 p-md-5">
+
+                        <h1 class="h4 text-dark fw-bold mb-4">
+                            Mensajes del curso
+                        </h1>
+
+                        <form th:action="@{/instructor/courses/{slug}/messages(slug=${course.slug})}" 
+                            th:object="${messageDto}"
+                            method="post" >
+                            <p class="mb-4">
+                                Escríbele mensajes a tus estudiantes (opcional) que se enviarán automáticamente cuando
+                                se inscriban en tu curso o lo completen. Así los estarás animando a involucrarse más en
+                                el contenido del curso. Si prefieres no enviar mensajes de bienvenida o de enhorabuena,
+                                deja esta casilla en blanco.
+                            </p>
+
+
+                            <div class="mb-4">
+                                <label for="welcomeMessage" class="form-label">
+                                    Mensaje de Bienvenida
+                                </label>
+                                <textarea id="welcomeMessage" 
+                                    class="form-control"
+                                    th:field="*{welcomeMessage}"
+                                    rows="3"
+                                    placeholder="Escribe tu mensaje aquí..."></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="congratulationsMessage" class="form-label">Mensaje de Felicitación</label>
+                                <textarea id="congratulationsMessage" 
+                                    class="form-control" rows="3"
+                                    th:field="*{goodbyeMessage}"
+                                    placeholder="Escribe tu mensaje aquí..."></textarea>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-dark btn-lg px-5">
+                                    Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

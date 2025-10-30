@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div th:fragment="navigation(course, activePage)" class="card shadow-sm border-0">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold text-dark mb-3">Edición del curso</h5>
+
+        <!-- Menú de navegación vertical (Bootstrap Nav Pills) -->
+        <nav class="nav nav-pills flex-column">
+
+            <!-- 1. Información del curso -->
+            <a class="nav-link text-dark"
+               th:href="@{/instructor/courses/{slug}/edit(slug=${course.slug})}"
+               th:classappend="${activePage == 'info'} ? 'active bg-dark text-white' : ''">
+                Información del curso
+            </a>
+
+            <!-- 2. Video promocional -->
+            <a class="nav-link text-dark"
+               th:href="@{/instructor/courses/{slug}/video(slug=${course.slug})}"
+               th:classappend="${activePage == 'video'} ? 'active bg-dark text-white' : ''">
+                Video promocional
+            </a>
+
+            <!-- 3. Metas del curso -->
+            <a class="nav-link text-dark"
+               th:href="@{/instructor/courses/{slug}/goals(slug=${course.slug})}"
+               th:classappend="${activePage == 'goals'} ? 'active bg-dark text-white' : ''">
+                Metas del curso
+            </a>
+
+            <!-- 4. Requerimientos -->
+            <a class="nav-link text-dark"
+               th:href="@{/instructor/courses/{slug}/requirements(slug=${course.slug})}"
+               th:classappend="${activePage == 'requirements'} ? 'active bg-dark text-white' : ''">
+                Requerimientos
+            </a>
+
+            <!-- 5. Lecciones del curso -->
+            <a class="nav-link text-dark"
+               th:href="@{/instructor/courses/{slug}/curriculum(slug=${course.slug})}"
+               th:classappend="${activePage == 'curriculum'} ? 'active bg-dark text-white' : ''">
+                Lecciones del curso
+            </a>
+
+            <!-- 6. Mensajes del curso -->
+            <a class="nav-link text-dark"
+               th:href="@{/instructor/courses/{slug}/messages(slug=${course.slug})}"
+               th:classappend="${activePage == 'messages'} ? 'active bg-dark text-white' : ''">
+                Mensajes del curso
+            </a>
+
+        </nav>
+    </div>
+</div>
+
+</body>
+</html>
