@@ -27,13 +27,8 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("Iniciando el sembrado de la base de datos...");
 
-        File uploads = new File("uploads");
-        if (uploads.exists()) {
-            FileSystemUtils.deleteRecursively(uploads);
-            System.out.println("Carpeta 'uploads' eliminada.");
-        }
+        eliminarUploads();
 
         userSeeder.seed();
         categorySeeder.seed();
@@ -42,5 +37,15 @@ public class DatabaseSeeder implements CommandLineRunner {
         courseSeeder.seed();
 
         System.out.println("Sembrado completado.");
+    }
+
+    private void eliminarUploads() {
+        File uploads = new File("uploads");
+        if (uploads.exists()) {
+            FileSystemUtils.deleteRecursively(uploads);
+            System.out.println("Carpeta 'uploads' eliminada.");
+        } else {
+            System.out.println("No existe la carpeta 'uploads'.");
+        }
     }
 }
