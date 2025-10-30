@@ -1,11 +1,11 @@
-// resources/static/js/components/goals/GoalManager.js
+import { template } from './GoalManager.template.js';
 
-// ✅ NUEVA RUTA: Importa desde la misma carpeta
 import GoalForm from './GoalForm.js';
 import GoalList from './GoalList.js';
 
 export default {
-    // ✅ AHORA: Recibe 'slug' como un prop
+    template: template,
+    
     props: ['slug'], 
 
     components: {
@@ -14,17 +14,19 @@ export default {
     },
     data() {
         return {
-            // 'slug' ya no es necesario aquí, viene de props
             goals: [],
+
+            //Estados de carga
             isLoading: true,
             isUpdating: false,
             isDeleting: {},
+
+            // Mensajes
             message: null,
             messageType: 'success',
         };
     },
     methods: {
-        // --- Lógica de Mensajes ---
         showMessage(text, type = 'success', duration = 3000) {
             this.message = text;
             this.messageType = type;
@@ -38,9 +40,11 @@ export default {
 
         // --- Lógica de API ---
         async fetchGoals() {
+            // Estado de carga
             this.isLoading = true;
+
+            // Lógica para obtener las metas
             try {
-                // 'this.slug' funciona porque ahora es un prop
                 const response = await fetch(`/api/courses/${this.slug}/goals`);
                 if (!response.ok) throw new Error('Error al cargar las metas.');
                 this.goals = await response.json();
@@ -52,7 +56,10 @@ export default {
         },
 
         async updateGoals() {
+            // Estado de carga
             this.isUpdating = true;
+
+            // Lógica para actualizar las metas
             try {
                 const response = await fetch(`/api/courses/${this.slug}/goals`, {
                     method: 'PUT',
@@ -72,6 +79,7 @@ export default {
                 }
                 
                 this.showMessage('Metas actualizadas correctamente.', 'success');
+
             } catch (err) {
                 this.showMessage(err.message, 'danger');
             } finally {
@@ -80,7 +88,10 @@ export default {
         },
 
         async handleGoalDelete(goal) {
+            // Estado de carga
             this.isDeleting[goal.id] = true;
+
+            // Lógica para eliminar la meta
             try {
                 const response = await fetch(`/api/courses/goals/${goal.id}`, {
                     method: 'DELETE',
@@ -99,70 +110,8 @@ export default {
             this.goals.push(newGoal);
         }
     },
-    mounted() {
-        // ✅ CÓDIGO MÁS LIMPIO: Ya no necesitamos leer 'dataset'
-        console.log('Componente GoalManager montado. Slug (prop):', this.slug);
-        
+    mounted() {        
         // Inicia la carga de datos
         this.fetchGoals();
     },
-    template: `
-        <div>
-            <div v-if="isLoading" class="d-flex justify-content-center my-5">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Cargando...</span>
-                </div>
-            </div>
-
-            <div v-else>
-
-                <form @submit.prevent="updateGoals">
-                    <div class="card shadow-sm border-0 rounded-lg">
-                        <div class="card-body p-4 p-md-5">
-
-                            <h1 class="h3 fw-bold mb-0">Llega a tus estudiantes</h1>
-                            <p class="text-muted mb-0">
-                                Las metas que escribas aquí ayudarán a los estudiantes a decidir si
-                                tu curso es el adecuado para ellos.
-                            </p>
-                            <hr class="my-4">
-                            
-                            <goal-list 
-                                v-model="goals"
-                                :is-deleting="isDeleting"
-                                @delete-goal="handleGoalDelete"
-                            ></goal-list>
-
-                            <div class="text-end mt-4">
-                                <button type="submit" class="btn btn-dark btn-lg px-4"
-                                        :disabled="isUpdating">
-                                    <span v-if="!isUpdating">Actualizar Metas</span>
-                                    <span v-if="isUpdating">
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        Actualizando...
-                                    </span>
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </form>
-
-                <div v-if="message"
-                     class="alert alert-dismissible fade show mt-4"
-                     :class="messageType === 'success' ? 'alert-success' : 'alert-danger'"
-                     role="alert">
-                    <span v-html="message"></span>
-                    <button type="button" class="btn-close" @click="clearMessage" aria-label="Close"></button>
-                </div>
-                
-                <goal-form 
-                    :slug="slug" 
-                    @goal-added="handleGoalAdded"
-                    @show-message="showMessage"
-                ></goal-form>
-
-            </div>
-        </div>
-    `
 };
