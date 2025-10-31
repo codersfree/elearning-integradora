@@ -11,8 +11,9 @@ import com.example.codersfree.model.Price;
 import com.example.codersfree.model.User;
 import com.example.codersfree.repository.CourseRepository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,37 +27,30 @@ import java.util.List;
 @Service
 public class CourseService {
 
-    private static final Logger log = LoggerFactory.getLogger(CourseService.class);
-
     // Repositorios
     @Autowired
     private CourseRepository courseRepository;
 
     // Servicios
     @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
     private FileStorageService storage;
 
     @Autowired
-    private LevelService levelService;
-
-    @Autowired
-    private PriceService priceService;
-
-    @Autowired
     private UserService userService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional(readOnly = true)
     public List<Course> findAll() {
         return courseRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Course> findByInstructorEmail(String email) {
-        User user = userService.findByEmail(email);
-        return courseRepository.findByInstructorId(user.getId());
+        /* User user = userService.findByEmail(email);
+        return courseRepository.findByInstructorId(user.getId()); */
+        return courseRepository.findByInstructorEmail(email);
     }
 
     @Transactional(readOnly = true)
@@ -66,7 +60,6 @@ public class CourseService {
     }
 
     //Transacciones
-
     @Transactional
     public Course createCourse(CourseCreateDto dto, String instructorEmail) {
 
@@ -75,9 +68,9 @@ public class CourseService {
             throw new IllegalArgumentException("El slug ya está en uso. Por favor, elige otro.");
         }
 
-        Category category = categoryService.findById(dto.getCategoryId());
-        Level level = levelService.findById(dto.getLevelId());
-        Price price = priceService.findById(dto.getPriceId());
+        Category category = entityManager.getReference(Category.class, dto.getCategoryId());
+        Level level = entityManager.getReference(Level.class, dto.getLevelId());
+        Price price = entityManager.getReference(Price.class, dto.getPriceId());
         User instructor = userService.findByEmail(instructorEmail);
 
         Course course = Course.builder()
@@ -94,37 +87,34 @@ public class CourseService {
     }
 
     @Transactional
-    public Course updateCourse(String slug, CourseUpdateDto dto, MultipartFile file) {
+    public Course updateCourse(String slug, CourseUpdateDto dto, MultipartFile file) throws IOException {
 
         // Validar slug único si ha cambiado
-        if (courseRepository.existsBySlug(dto.getSlug()) && !slug.equals(dto.getSlug())) {
+        if (!slug.equals(dto.getSlug()) && courseRepository.existsBySlug(dto.getSlug())) {
             throw new IllegalArgumentException("El slug '" + dto.getSlug() + "' ya está en uso por otro curso.");
         }
 
-        // Buscar entidades
+        // Buscar curso
         Course course = findBySlug(slug);
-        Category category = categoryService.findById(dto.getCategoryId());
-        Level level = levelService.findById(dto.getLevelId());
-        Price price = priceService.findById(dto.getPriceId());
 
-        // Procesar la imagen (si se subió una nueva)
+        // Actualizar imagen si se proporciona un nuevo archivo
         if (file != null && !file.isEmpty()) {
 
             // Borrar imagen anterior si existe
-            if (course.getImagePath() != null) {
+            if (course.getImagePath() != null && !course.getImagePath().isBlank()) {
                 storage.delete(course.getImagePath());
             }
 
-            try {
-                String imagePath = storage.save("courses/", file);
-                course.setImagePath(imagePath);
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Error al procesar la subida de la imagen: " + e.getMessage());
-            }
+            String imagePath = storage.save("courses/", file);
+            course.setImagePath(imagePath);
 
         }
 
         // Actualizar la entidad
+        Category category = entityManager.getReference(Category.class, dto.getCategoryId());
+        Level level = entityManager.getReference(Level.class, dto.getLevelId());
+        Price price = entityManager.getReference(Price.class, dto.getPriceId());
+
         course.setName(dto.getName());
         course.setSlug(dto.getSlug());
         course.setSummary(dto.getSummary());
@@ -137,49 +127,35 @@ public class CourseService {
     }
 
     @Transactional
-    public Course updateCourseVideo(String existingSlug, MultipartFile file) {
+    public Course updateCourseVideo(String slug, MultipartFile file) throws IOException {
         
-        // 1. Validar que el archivo no esté vacío
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Se requiere un archivo de video.");
         }
 
-        // 2. Buscar el curso (lanza EntityNotFoundException si no existe)
-        Course courseDB = findBySlug(existingSlug);
+        Course course = findBySlug(slug);
 
-        // 3. Definir el directorio de videos
-        String videoDirectory = "courses/videos/";
-
-        try {
-            // 4. Borrar el video anterior si existe
-            if (courseDB.getVideoPath() != null && !courseDB.getVideoPath().isBlank()) {
-                storage.delete(courseDB.getVideoPath());
-            }
-
-            // 5. Guardar el nuevo video
-            String videoPath = storage.save(videoDirectory, file);
-            
-            // 6. Actualizar la entidad
-            courseDB.setVideoPath(videoPath);
-            
-            // 7. Guardar y devolver
-            return courseRepository.save(courseDB);
-
-        } catch (IOException e) {
-            log.error("Error de E/S al guardar el video: {}", e.getMessage(), e);
-            throw new IllegalArgumentException("Error al procesar la subida del video: " + e.getMessage());
+        if (course.getVideoPath() != null && !course.getVideoPath().isBlank()) {
+            storage.delete(course.getVideoPath());
         }
+
+        String videoPath = storage.save("courses/videos/", file);
+        
+        course.setVideoPath(videoPath);
+        
+        return courseRepository.save(course);
+
     }
 
     @Transactional
-    public Course updateCourseMessage(String existingSlug, MessageDto dto) {
+    public Course updateCourseMessage(String slug, MessageDto dto) {
         
-        Course courseDB = findBySlug(existingSlug);
+        Course course = findBySlug(slug);
 
-        courseDB.setWelcomeMessage(dto.getWelcomeMessage());
-        courseDB.setGoodbyeMessage(dto.getGoodbyeMessage());
+        course.setWelcomeMessage(dto.getWelcomeMessage());
+        course.setGoodbyeMessage(dto.getGoodbyeMessage());
 
-        return courseRepository.save(courseDB);
+        return courseRepository.save(course);
     }
 
 }

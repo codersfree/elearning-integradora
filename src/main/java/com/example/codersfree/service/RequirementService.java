@@ -7,8 +7,10 @@ import com.example.codersfree.repository.RequirementRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,8 @@ public class RequirementService {
     @Transactional(readOnly = true)
     public Requirement findById(Long id) {
         return requirementRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Requerimiento no encontrado con ID: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Requerimiento no encontrado con ID: " + id));
     }
 
     @Transactional
@@ -38,31 +41,24 @@ public class RequirementService {
     }
 
     @Transactional
-    public void updateRequirements(Course course, List<RequirementDto> requirementDtos) {
+    public List<Requirement> updateRequirements(Course course, List<Requirement> requirementsInput) {
 
-        Map<Long, Requirement> requirements = requirementRepository.findAllById(
-                requirementDtos.stream()
-                        .map(RequirementDto::getId)
-                        .toList())
-                .stream()
+        Map<Long, Requirement> existingRequirements = requirementRepository.findAllById(
+                requirementsInput.stream().map(Requirement::getId).toList()).stream()
                 .collect(Collectors.toMap(Requirement::getId, Function.identity()));
 
-        for (RequirementDto dto : requirementDtos) {
-
-            String newName = dto.getName();
-
-            if (newName == null || newName.isBlank()) {
-                continue; // ignorar nombres vacíos
+        requirementsInput.forEach(inputReq -> {
+            Requirement managedReq = existingRequirements.get(inputReq.getId());
+            if (managedReq != null) {
+                String newName = inputReq.getName();
+                if (newName != null && !newName.isBlank() && !newName.equals(managedReq.getName())) {
+                    managedReq.setName(newName);
+                }
             }
+        });
 
-            Requirement requirement = requirements.get(dto.getId());
+        return requirementRepository.saveAll(existingRequirements.values());
 
-            if (!requirement.getName().equals(newName)) {
-                requirement.setName(newName);
-            }
-        }
-
-        requirementRepository.saveAll(requirements.values());
     }
 
     @Transactional

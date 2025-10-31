@@ -13,10 +13,13 @@ public class FileStorageService {
     private static final String BASE_PATH = "uploads/";
 
     public String save(String directory, MultipartFile file) throws IOException {
+
+        // Validar que el archivo no esté vacío
         if (file.isEmpty()) {
             throw new IOException("El archivo está vacío.");
         }
-        
+
+        // Asegurarse de que el directorio termine con una barra
         if (!directory.endsWith("/")) {
             directory += "/";
         }
@@ -33,20 +36,13 @@ public class FileStorageService {
         return directory + filename;
     }
 
-    public boolean delete(String relativePath) {
-        if (relativePath == null || relativePath.isBlank()) return false;
-        Path path = Paths.get(BASE_PATH).resolve(relativePath).normalize();
-        try {
-            return Files.deleteIfExists(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+    public boolean delete(String relativePath) throws IOException {
 
-    public String url(String relativePath) {
-        if (relativePath == null || relativePath.isBlank()) return null;
-        return "/uploads/" + relativePath.replace("\\", "/");
+        if (relativePath == null || relativePath.isBlank()) return false;
+
+        Path path = Paths.get(BASE_PATH).resolve(relativePath).normalize();
+
+        return Files.deleteIfExists(path);
     }
 
     private String getExtension(String filename) {

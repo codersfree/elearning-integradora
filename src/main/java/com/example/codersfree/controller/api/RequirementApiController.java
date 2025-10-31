@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -31,10 +29,9 @@ public class RequirementApiController {
 
         Course course = courseService.findBySlug(slug);
         
-        List<RequirementDto> requirements = course.getRequirements().stream()
+        List<Requirement> requirements = course.getRequirements().stream()
                     .sorted(Comparator.comparing(Requirement::getId))
-                    .map(r -> new RequirementDto(r.getId(), r.getName()))
-                    .collect(Collectors.toList());
+                    .toList();
 
         return ResponseEntity.ok(requirements);
     }
@@ -47,20 +44,17 @@ public class RequirementApiController {
         Course course = courseService.findBySlug(slug);
         Requirement requirement = requirementService.createRequirement(course, requirementDto);
 
-        RequirementDto created = new RequirementDto(requirement.getId(), requirement.getName());
-        
-        return ResponseEntity.status(201).body(created);
+        return ResponseEntity.status(201).body(requirement);
     }
 
     @PutMapping("/{slug}/requirements")
-    public ResponseEntity<?> updateRequirements(
+    public List<Requirement> updateRequirements(
             @PathVariable String slug,
-            @RequestBody List<@Valid RequirementDto> requirements) {
+            @RequestBody List<@Valid Requirement> requirements) {
 
         Course course = courseService.findBySlug(slug);
-        requirementService.updateRequirements(course, requirements);
 
-        return ResponseEntity.ok(Map.of("message", "Requerimientos actualizados correctamente."));
+        return requirementService.updateRequirements(course, requirements);
     }
 
     @DeleteMapping("/requirements/{requirementId}")

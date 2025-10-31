@@ -6,16 +6,10 @@ import com.example.codersfree.service.LevelService;
 import com.example.codersfree.service.PriceService;
 import com.example.codersfree.dto.CourseCreateDto;
 import com.example.codersfree.dto.CourseUpdateDto;
-import com.example.codersfree.dto.GoalDto;
 import com.example.codersfree.dto.MessageDto;
-import com.example.codersfree.dto.RequirementDto;
 import com.example.codersfree.model.Course;
-import com.example.codersfree.model.Goal;
-import com.example.codersfree.model.Requirement;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -25,15 +19,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/instructor")
 public class CourseInstructorController {
-
-    private static final Logger log = LoggerFactory.getLogger(CourseInstructorController.class);
 
     @Autowired
     private CourseService courseService;
@@ -73,7 +63,7 @@ public class CourseInstructorController {
             RedirectAttributes redirectAttributes,
             Authentication authentication) {
 
-        // Verifica si hay errores de validación
+        // Verificar Errores de Validación
         if (bindingResult.hasErrors()) {
             
             redirectAttributes.addFlashAttribute(
@@ -86,27 +76,15 @@ public class CourseInstructorController {
             return "redirect:/instructor/courses/create"; 
         }
 
-        // Crear el curso
-        try {
-            String email = authentication.getName();
-            Course newCourse = courseService.createCourse(courseDto, email);
+        String email = authentication.getName();
+        Course newCourse = courseService.createCourse(courseDto, email);
 
-            redirectAttributes.addFlashAttribute(
-                "success", 
-                "¡Curso creado! Ahora puedes añadir más detalles."
-            );
+        redirectAttributes.addFlashAttribute(
+            "success", 
+            "¡Curso creado! Ahora puedes añadir más detalles."
+        );
 
-            return "redirect:/instructor/courses/" + newCourse.getSlug() + "/edit";
-
-        } catch (Exception e) {
-
-            redirectAttributes.addFlashAttribute(
-                "error", 
-                e.getMessage()
-            );
-            redirectAttributes.addFlashAttribute("courseDto", courseDto);
-            return "redirect:/instructor/courses/create";
-        }
+        return "redirect:/instructor/courses/" + newCourse.getSlug() + "/edit";
     }
 
     @GetMapping("/courses/{slug}/edit")
@@ -118,20 +96,8 @@ public class CourseInstructorController {
         
         Course course = courseService.findBySlug(slug);
 
-        //Verificar si llega un courseDto desde un redirect (errores de validación)
-        if (!model.containsAttribute("courseDto")) {
-
-            //Si no, crear uno nuevo con los datos del curso
-            CourseUpdateDto courseDto = new CourseUpdateDto(
-                course.getName(),
-                course.getSlug(),
-                course.getSummary(),
-                course.getDescription(),
-                course.getCategory().getId(),
-                course.getLevel().getId(),
-                course.getPrice().getId()
-            );
-
+        if (!model.containsAttribute("courseDto")) {            
+            CourseUpdateDto courseDto = new CourseUpdateDto(course);
             model.addAttribute("courseDto", courseDto);
         }
 
@@ -152,21 +118,18 @@ public class CourseInstructorController {
         RedirectAttributes redirectAttributes
     ) {
 
-        // Verificar Errores de Validación
         if (bindingResult.hasErrors()) {
-            // Agregar los errores a los atributos flash para mostrarlos después del redirect
+
             redirectAttributes.addFlashAttribute(
                 "org.springframework.validation.BindingResult.courseDto",
                 bindingResult
             );
 
-            // Mantener los datos ingresados por el usuario
             redirectAttributes.addFlashAttribute("courseDto", courseDto);
 
             return "redirect:/instructor/courses/" + slug + "/edit";
         }
 
-        // Actualizar el curso desde el servicio
         try {
 
             courseService.updateCourse(slug, courseDto, file);
@@ -179,6 +142,7 @@ public class CourseInstructorController {
             return "redirect:/instructor/courses/" + slug + "/edit";
 
         } catch (Exception e) {
+
             redirectAttributes.addFlashAttribute(
                 "error", 
                 e.getMessage()
@@ -206,11 +170,13 @@ public class CourseInstructorController {
     @PostMapping("/courses/{slug}/video")
     public String storeVideo(
         @PathVariable String slug,
-        @RequestParam(name = "file") MultipartFile file,
+        @RequestParam(name = "file") 
+        MultipartFile file,
         RedirectAttributes redirectAttributes
     ) {
 
         try {
+
             courseService.updateCourseVideo(slug, file);
             redirectAttributes.addFlashAttribute(
                 "success", 
@@ -218,13 +184,16 @@ public class CourseInstructorController {
             );
 
             return "redirect:/instructor/courses/" + slug + "/video";
+
         } catch (Exception e) {
+
             redirectAttributes.addFlashAttribute(
                 "error", 
                 e.getMessage()
             );
 
             return "redirect:/instructor/courses/" + slug + "/video";
+            
         }
 
     }
@@ -288,14 +257,11 @@ public class CourseInstructorController {
 
             return "redirect:/instructor/courses/" + slug + "/messages";
         }
-
-        try {
-            courseService.updateCourseMessage(slug, messageDto);
-            redirectAttributes.addFlashAttribute("success", "Mensaje guardado correctamente.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
-
+      
+        courseService.updateCourseMessage(slug, messageDto);
+        
+        redirectAttributes.addFlashAttribute("success", "Mensaje guardado correctamente.");
+  
         return "redirect:/instructor/courses/" + slug + "/messages";
 
     }
