@@ -2,27 +2,25 @@ package com.example.codersfree.repository;
 
 import com.example.codersfree.model.Course;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.query.Procedure;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
-    @Procedure(procedureName = "FindByInstructorEmail")
-    List<Course> findByInstructorEmail(@Param("instructor_email") String email);
-
     //Realizar busquedas por el slug del curso
     Optional<Course> findBySlug(String slug);
+
+    //Realizar busquedas por el slug del curso y el email del instructor
+    Optional<Course> findBySlugAndInstructorEmail(String slug, String email);
+
+    //Realizar busquedas por el email del instructor
+    @Procedure(procedureName = "FindByInstructorEmail")
+    List<Course> findByInstructorEmail(String email);
 
     //Realizar busquedas por el nombre del curso
     List<Course> findByNameContainingIgnoreCase(String name);

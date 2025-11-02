@@ -91,10 +91,11 @@ public class CourseInstructorController {
     public String edit(
         @PathVariable String slug, 
         Model model, 
-        RedirectAttributes redirectAttributes
+        RedirectAttributes redirectAttributes,
+        Authentication authentication
     ) {
-        
-        Course course = courseService.findBySlug(slug);
+
+        Course course = courseService.findBySlugAndInstructorEmail(slug, authentication.getName());
 
         if (!model.containsAttribute("courseDto")) {            
             CourseUpdateDto courseDto = new CourseUpdateDto(course);
@@ -156,11 +157,12 @@ public class CourseInstructorController {
     public String getVideoPage(
         @PathVariable String slug, 
         Model model, 
-        RedirectAttributes redirectAttributes
+        RedirectAttributes redirectAttributes,
+        Authentication authentication
     ) 
     {
 
-        Course course = courseService.findBySlug(slug);
+        Course course = courseService.findBySlugAndInstructorEmail(slug, authentication.getName());
         model.addAttribute("course", course);
 
         return "instructor/courses/video";
@@ -201,9 +203,11 @@ public class CourseInstructorController {
     @GetMapping("/courses/{slug}/goals")
     public String getGoalsPage(
         @PathVariable String slug, 
-        Model model) {
-        
-        Course course = courseService.findBySlug(slug);
+        Model model,
+        Authentication authentication
+    ) {
+
+        Course course = courseService.findBySlugAndInstructorEmail(slug, authentication.getName());
         model.addAttribute("course", course);
 
         return "instructor/courses/goals";
@@ -213,18 +217,24 @@ public class CourseInstructorController {
     public String getRequirementsPage(
             @PathVariable String slug,
             Model model,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            Authentication authentication
+        ) {
 
-        Course course = courseService.findBySlug(slug);
+        Course course = courseService.findBySlugAndInstructorEmail(slug, authentication.getName());
         model.addAttribute("course", course);
 
         return "instructor/courses/requirements";
     }
 
     @GetMapping("/courses/{slug}/messages")
-    public String messages(@PathVariable String slug, Model model) {
+    public String messages(
+        @PathVariable String slug, 
+        Model model,
+        Authentication authentication
+    ) {
 
-        Course course = courseService.findBySlug(slug);
+        Course course = courseService.findBySlugAndInstructorEmail(slug, authentication.getName());
 
         if (!model.containsAttribute("messageDto")) {
             MessageDto dto = new MessageDto(

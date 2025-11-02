@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/admin}" th:with="paginaActiva='roles'">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Dashboard Admin
+    </title>
+</head>
+
+<body>
+
+    <div layout:fragment="header">
+
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>
+                    Roles
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/admin}">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Roles
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+    </div>
+
+    <div layout:fragment="content">
+
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-primary" th:href="@{/admin/roles/create}">
+                Nuevo Rol
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 100px;">ID</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col" style="width: 160px; text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <!-- CUERPO DE LA TABLA (CON DATOS) -->
+                    <tbody th:if="${!roles.isEmpty()}">
+                        <tr th:each="role : ${roles}">
+
+                            <th scope="row" th:text="${role.id}">1</th>
+
+                            <td th:text="${role.name}">Nombre del Rol</td>
+
+                            <!-- Columna de Acciones (Botones) -->
+                            <td style="text-align: right;">
+
+                                <a th:href="@{/admin/roles/{id}/edit(id=${role.id})}" class="btn btn-warning btn-sm"
+                                    style="margin-right: 5px;">
+                                    Editar
+                                </a>
+
+                                <form th:action="@{/admin/roles/{id}/delete(id=${role.id})}" method="post"
+                                    style="display: inline;" class="form-delete">
+                                    
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+                    </tbody>
+
+                    <!-- MENSAJE DE TABLA VACÍA -->
+                    <tbody th:if="${roles.isEmpty()}">
+                        <tr>
+                            <td colspan="3" class="text-center">No hay roles registrados.</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                
+                // Seleccionar todos los FORMULARIOS con la clase .form-delete
+                const deleteForms = document.querySelectorAll('.form-delete');
+                
+                // Añadir un listener a cada formulario
+                deleteForms.forEach(form => {
+                    
+                    // Escuchar el evento 'submit' en el formulario
+                    form.addEventListener('submit', function(event) {
+                        
+                        // 1. Prevenir el envío automático del formulario
+                        event.preventDefault(); 
+                        
+                        // 2. Mostrar la alerta de SweetAlert2
+                        Swal.fire({
+                            title: '¿Estás seguro?',
+                            text: '¡No podrás revertir esta acción!',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                            confirmButtonText: 'Sí, ¡eliminar!',
+                            cancelButtonText: 'Cancelar'
+                        }).then((result) => {
+                            // 3. Si el usuario confirma...
+                            if (result.isConfirmed) {
+                                // ...enviar el formulario manualmente.
+                                this.submit();
+                            }
+                        });
+                    });
+                });
+            });
+        </script>
+
+    </div>
+
+</body>
+
+</html>
+

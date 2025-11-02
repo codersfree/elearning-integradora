@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -38,4 +40,12 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    //Carga ansiosa de roles
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "role_user", // Nombre de la tabla intermedia
+        joinColumns = @JoinColumn(name = "user_id"), // Clave foránea de esta entidad (User)
+        inverseJoinColumns = @JoinColumn(name = "role_id") // Clave foránea de la otra entidad (Role)
+    )
+    private Set<Role> roles = new HashSet<>();
 }

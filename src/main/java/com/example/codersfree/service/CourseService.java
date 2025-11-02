@@ -48,8 +48,6 @@ public class CourseService {
 
     @Transactional
     public List<Course> findByInstructorEmail(String email) {
-        /* User user = userService.findByEmail(email);
-        return courseRepository.findByInstructorId(user.getId()); */
         return courseRepository.findByInstructorEmail(email);
     }
 
@@ -57,6 +55,12 @@ public class CourseService {
     public Course findBySlug(String slug) {
         return courseRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Curso no encontrado con slug: " + slug));
+    }
+
+    @Transactional(readOnly = true)
+    public Course findBySlugAndInstructorEmail(String slug, String email) {
+        return courseRepository.findBySlugAndInstructorEmail(slug, email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Curso no encontrado con slug: " + slug + " y email de instructor: " + email));
     }
 
     //Transacciones
