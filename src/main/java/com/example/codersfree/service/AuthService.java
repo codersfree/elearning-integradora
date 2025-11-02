@@ -33,22 +33,17 @@ public class AuthService {
             throw new IllegalArgumentException("Este email ya está registrado");
         }
 
-        String password = userDto.getPassword();
-
         User user = User.builder()
                 .name(userDto.getName())
                 .email(userDto.getEmail())
-                .password(passwordEncoder.encode(password))
+                .password(passwordEncoder.encode(userDto.getPassword()))
                 .build();
         
-        userRepository.save(user);
+        return userRepository.save(user);
 
-        autenticar(user.getEmail(), password);
-
-        return user;
     }
 
-    private void autenticar(String email, String rawPassword) {
+    public void autenticar(String email, String rawPassword) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, rawPassword)
         );

@@ -47,7 +47,12 @@ public class AuthController {
         RedirectAttributes redirectAttributes) {
 
         try {
+            //Registrar el usuario
             authService.registrar(userDto);
+
+            //Autenticar al usuario recién registrado
+            authService.autenticar(userDto.getEmail(), userDto.getPassword());
+
             redirectAttributes.addFlashAttribute(
                 "success", 
                 "¡Tu cuenta ha sido creada e iniciada correctamente!"
