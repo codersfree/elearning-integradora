@@ -66,7 +66,7 @@
                             <!-- Columna de Acciones (Botones) -->
                             <td style="text-align: right;">
 
-                                <a th:href="@{/admin/roles/{id}/edit(id=${role.id})}" class="btn btn-warning btn-sm"
+                                <a th:href="@{/admin/roles/{id}/edit(id=${role.id})}" class="btn btn-primary btn-sm"
                                     style="margin-right: 5px;">
                                     Editar
                                 </a>
@@ -98,43 +98,7 @@
                 
             </div>
         </div>
-        
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                
-                // Seleccionar todos los FORMULARIOS con la clase .form-delete
-                const deleteForms = document.querySelectorAll('.form-delete');
-                
-                // Añadir un listener a cada formulario
-                deleteForms.forEach(form => {
-                    
-                    // Escuchar el evento 'submit' en el formulario
-                    form.addEventListener('submit', function(event) {
-                        
-                        // 1. Prevenir el envío automático del formulario
-                        event.preventDefault(); 
-                        
-                        // 2. Mostrar la alerta de SweetAlert2
-                        Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: '¡No podrás revertir esta acción!',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#d33',
-                            cancelButtonColor: '#3085d6',
-                            confirmButtonText: 'Sí, ¡eliminar!',
-                            cancelButtonText: 'Cancelar'
-                        }).then((result) => {
-                            // 3. Si el usuario confirma...
-                            if (result.isConfirmed) {
-                                this.submit();
-                            }
-                        });
-                    });
-                });
-            });
-        </script>
-
+    
     </div>
 
 </body>
