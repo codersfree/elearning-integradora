@@ -21,13 +21,13 @@ import com.example.codersfree.service.RoleService;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/roles")
 public class RoleAdminController {
 
     @Autowired
     private RoleService roleService;
     
-    @GetMapping("/roles")
+    @GetMapping
     public String index(
         Model model,
         @PageableDefault(
@@ -41,7 +41,7 @@ public class RoleAdminController {
         return "admin/roles/index";
     }
 
-    @GetMapping("/roles/create")
+    @GetMapping("/create")
     public String create(Model model) {
 
         if (!model.containsAttribute("roleDto")) {
@@ -51,7 +51,7 @@ public class RoleAdminController {
         return "admin/roles/create";
     }
 
-    @PostMapping("/roles/create")
+    @PostMapping("/create")
     public String store(
         @Valid @ModelAttribute("roleDto") RoleDto roleDto,
         BindingResult bindingResult,
@@ -87,7 +87,7 @@ public class RoleAdminController {
         return "redirect:/admin/roles";
     }
 
-    @GetMapping("/roles/{id}/edit")
+    @GetMapping("/{id}/edit")
     public String edit(
         @PathVariable("id") Long id, 
         Model model
@@ -105,7 +105,7 @@ public class RoleAdminController {
         return "admin/roles/edit";
     }
 
-    @PostMapping("/roles/{id}/edit")
+    @PostMapping("/{id}/edit")
     public String edit(
         @PathVariable("id") Long id, 
         @Valid @ModelAttribute("roleDto") RoleDto roleDto,
@@ -141,7 +141,7 @@ public class RoleAdminController {
         return "redirect:/admin/roles/" + id + "/edit";
     }
 
-    @PostMapping("/roles/{id}/delete")
+    @PostMapping("/{id}/delete")
     public String delete(
         @PathVariable("id") Long id, 
         RedirectAttributes redirectAttributes

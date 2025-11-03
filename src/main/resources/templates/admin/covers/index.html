@@ -8,6 +8,16 @@
     <title>
         Dashboard Admin
     </title>
+
+    <style>
+        .banner-img-3-1 {
+            width: 100%;
+            height: 80px;
+            aspect-ratio: 3 / 1;
+            object-fit: cover;
+            border-radius: 0.375rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -38,11 +48,92 @@
 
     <div layout:fragment="content">
 
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-primary" th:href="@{/admin/covers/create}">
+                Nueva Portada
+            </a>
+        </div>
 
+        <div class="card">
+
+            <div class="card-header">
+                <h3>Listado de Portadas</h3>
+            </div>
+
+            <div class="card-body">
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 240px;">Banner</th>
+
+                            <th scope="col">Promoción</th>
+
+                            <th scope="col" style="width: 150px;">F. inicio</th>
+
+                            <th scope="col" style="width: 150px;">F. finalización</th>
+
+                            <th scope="col" style="width: 160px; text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody th:if="${!covers.content.isEmpty()}">
+
+                        <tr class="align-middle" th:each="cover : ${covers.content}">
+                            <td>
+                                <img th:src="${cover.image}" class="banner-img-3-1" alt="Banner ${cover.title}">
+                            </td>
+
+                            <td class="align-middle">
+                                <!-- <strong>Descuento 5 usd</strong> -->
+                                <strong th:text="${cover.title}">Título de la Portada</strong>
+                                <br>                                 
+                                <span th:if="${!cover.active}" class="badge bg-danger">Inactivo</span>
+                                <span th:if="${cover.active}" class="badge bg-success">Activo</span>
+                            </td>
+
+                            <!-- <td class="align-middle">01/09/2025</td> -->
+                            <!-- <td class="align-middle" th:text="${cover.startAt}"></td> -->
+                            <td class="align-middle" th:text="${#temporals.format(cover.startAt, 'dd-MM-yyyy')}"></td>
+                            <td class="align-middle">
+                                <span th:if="${cover.endAt != null}" th:text="${cover.endAt}"></span>
+                                <span th:if="${cover.endAt == null}">Indefinido</span>
+                            </td>
+                            <td class="align-middle" style="text-align: right;">
+
+                                <a th:href="@{/admin/covers/{id}/edit(id=${cover.id})}" class="btn btn-primary btn-sm mr-2">
+                                    Editar
+                                </a>
+
+                                <form th:action="@{/admin/covers/{id}/delete(id=${cover.id})}" method="post"
+                                    class="form-delete d-inline">
+                                    
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                    <tbody th:if="${covers.content.isEmpty()}">
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                No hay promociones registradas.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+                <div th:replace="~{fragments/pagination :: paginador(pagina=${covers})}"></div>
+
+            </div>
+        </div>
 
     </div>
 
 </body>
 
 </html>
-

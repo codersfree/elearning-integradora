@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/admin}" th:with="paginaActiva='covers'">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Dashboard Admin
+    </title>
+
+    <style>
+        #cover-preview {
+            width: 100%;
+            aspect-ratio: 3 / 1;
+            object-fit: cover;
+            background-color: #eee;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div layout:fragment="header">
+
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>
+                    Nueva Portada
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/admin}">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/admin/covers}">
+                            Portadas
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Nuevo
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+    </div>
+
+    <div layout:fragment="content">
+
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <!-- <h3>Crear Nueva Portada</h3> -->
+                <h3>Editar Portada</h3>
+            </div>
+
+            <div class="card-body">
+
+                <form th:action="@{/admin/covers/{id}/edit(id=${cover.id})}" th:object="${coverDto}" method="post" enctype="multipart/form-data">
+
+                    <!-- Errores de validación -->
+                    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+                        <p class="fw-bold">Por favor, corrige los siguientes errores:</p>
+                        <ul>
+                            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                        </ul>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-8">
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}">
+                                <!-- <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                                </div> -->
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="startAt" class="form-label">Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="startAt" th:field="*{startAt}">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="endAt" class="form-label">Fecha de Finalización</label>
+                                    <input type="date" class="form-control" id="endAt" th:field="*{endAt}">
+                                </div>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+
+                                <input class="form-check-input" 
+                                    type="checkbox" 
+                                    role="switch" 
+                                    id="active"
+                                    th:field="*{active}">
+
+                                <label class="form-check-label" for="active">Activar portada al crear</label>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <div class="mb-3">
+                                <label class="form-label">Imagen de Portada (3:1)</label>
+
+                                <img id="cover-preview" 
+                                    class="img-fluid rounded mb-2 border"
+                                    th:src="${cover.image}"
+                                    alt="Vista previa de la portada">
+
+                                <input type="file" id="coverImageFile" name="file"
+                                    accept="image/*" onchange="preview_image(event, '#cover-preview')">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+                    <div class="text-end">
+                        <a th:href="@{/admin/covers}" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Guardar Portada</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <script th:src="@{/js/assets/preview_image.js}"></script>
+    </div>
+
+</body>
+
+</html>

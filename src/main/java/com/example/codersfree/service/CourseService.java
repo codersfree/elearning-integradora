@@ -41,11 +41,6 @@ public class CourseService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional(readOnly = true)
-    public List<Course> findAll() {
-        return courseRepository.findAll();
-    }
-
     @Transactional
     public List<Course> findByInstructorEmail(String email) {
         return courseRepository.findByInstructorEmail(email);
@@ -61,6 +56,11 @@ public class CourseService {
     public Course findBySlugAndInstructorEmail(String slug, String email) {
         return courseRepository.findBySlugAndInstructorEmail(slug, email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Curso no encontrado con slug: " + slug + " y email de instructor: " + email));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Course> findAll() {
+        return courseRepository.findAll();
     }
 
     //Transacciones

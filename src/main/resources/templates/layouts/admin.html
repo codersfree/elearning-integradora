@@ -98,6 +98,43 @@
     <script src="/adminlte/dist/js/adminlte.min.js"></script>
     <!-- AdminLTE for demo purposes -->
     <!-- <script src="/adminlte/dist/js/demo.js"></script> -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Seleccionar todos los FORMULARIOS con la clase .form-delete
+            const deleteForms = document.querySelectorAll('.form-delete');
+
+            // Añadir un listener a cada formulario
+            deleteForms.forEach(form => {
+
+                // Escuchar el evento 'submit' en el formulario
+                form.addEventListener('submit', function (event) {
+
+                    // 1. Prevenir el envío automático del formulario
+                    event.preventDefault();
+
+                    // 2. Mostrar la alerta de SweetAlert2
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: '¡No podrás revertir esta acción!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Sí, ¡eliminar!',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        // 3. Si el usuario confirma...
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    
 </body>
 
 </html>
