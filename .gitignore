@@ -34,3 +34,6 @@ build/
 
 ### Uploads ###
 uploads/
+
+### Profiles ###
+src/main/resources/application-*.properties
