@@ -1,8 +1,9 @@
 package com.example.codersfree.controller.admin;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,11 +28,16 @@ public class RoleAdminController {
     private RoleService roleService;
     
     @GetMapping("/roles")
-    public String index(Model model) {
-
-        List<Role> roles = roleService.findAll();
-        model.addAttribute("roles", roles);
-
+    public String index(
+        Model model,
+        @PageableDefault(
+            size = 10, 
+            page = 0,
+            sort = "id",
+            direction = Sort.Direction.DESC
+        ) Pageable pageable
+    ) {
+        model.addAttribute("roles", roleService.findPaginate(pageable));
         return "admin/roles/index";
     }
 

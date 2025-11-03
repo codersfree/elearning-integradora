@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+  <nav th:fragment="paginador(pagina)" aria-label="Navegación de páginas">
+    
+    <ul class="pagination justify-content-end" 
+        th:if="${pagina.totalPages > 1}">
+
+      <li class="page-item" th:classappend="${pagina.isFirst()} ? 'disabled'">
+        <a class="page-link" 
+           th:href="${pagina.isFirst()} ? '#' : @{${currentUrl}(page=${pagina.number - 1}, size=${pagina.size})}" 
+           th:attr="tabindex=${pagina.isFirst()} ? '-1' : null">
+           Previous
+        </a>
+      </li>
+
+      <li class="page-item" th:if="${pagina.pageNumbers != null && pagina.pageNumbers[0] > 0}">
+          <a class="page-link" th:href="@{${currentUrl}(page=${pagina.pageNumbers[0] - 1}, size=${pagina.size})}">...</a>
+      </li>
+
+      <li class="page-item" 
+          th:each="num : ${pagina.pageNumbers}"
+          th:classappend="${num == pagina.number} ? 'active'">
+        
+        <a class="page-link" th:href="@{${currentUrl}(page=${num}, size=${pagina.size})}">
+          <span th:text="${num + 1}"></span>
+          <span th:if="${num == pagina.number}" class="sr-only">(current)</span>
+        </a>
+      </li>
+
+      <li class="page-item"
+          th:if="${pagina.pageNumbers != null && pagina.pageNumbers[pagina.pageNumbers.size() - 1] < pagina.totalPages - 1}">
+          <a class="page-link"
+              th:href="@{${currentUrl}(page=${pagina.pageNumbers[pagina.pageNumbers.size() - 1] + 1}, size=${pagina.size})}">...</a>
+      </li>
+
+      <li class="page-item" th:classappend="${pagina.isLast()} ? 'disabled'">
+        <a class="page-link" 
+           th:href="${pagina.isLast()} ? '#' : @{${currentUrl}(page=${pagina.number + 1}, size=${pagina.size})}"
+           th:attr="tabindex=${pagina.isLast()} ? '-1' : null">
+           Next
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+</body>
+</html>
