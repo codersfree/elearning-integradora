@@ -2,12 +2,17 @@ package com.example.codersfree.seeder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
 
 @Component
+@ConditionalOnProperty(
+    name = "spring.jpa.hibernate.ddl-auto", 
+    havingValue = "create-drop"
+)
 public class DatabaseSeeder implements CommandLineRunner {
 
     @Autowired
