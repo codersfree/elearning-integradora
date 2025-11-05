@@ -22,14 +22,14 @@
         </div>
 
         <!-- Mensaje si no hay cursos -->
-        <div th:if="${courses.isEmpty()}" class="alert alert-secondary text-center p-5 shadow-sm border-0">
+        <div th:if="${courses.content.isEmpty()}" class="alert alert-secondary text-center p-5 shadow-sm border-0">
             Aún no has creado ningún curso. ¡Empieza ahora!
         </div>
 
         <!-- Listado de Cursos en formato de tarjeta Bootstrap -->
-        <div th:if="${!courses.isEmpty()}" class="vstack gap-4">
+        <div th:if="${!courses.content.isEmpty()}" class="vstack gap-4 mb-4">
 
-            <div th:each="course : ${courses}" class="card shadow-sm border-0 overflow-hidden">
+            <div th:each="course : ${courses.content}" class="card shadow-sm border-0 overflow-hidden">
                 <div class="row g-0">
 
                     <!-- Columna de la Imagen -->
@@ -108,6 +108,8 @@
             </div>
 
         </div>
+
+        <div th:replace="~{fragments/pagination :: paginador(pagina=${courses})}"></div>
 
     </div>
 

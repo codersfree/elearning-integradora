@@ -4,22 +4,17 @@
 
 <head>
 
-    <title>Cursos de desarrollo web | Coders Free</title>    
+    <title>Cursos de desarrollo web | Coders Free</title>
 
     <style>
-        body {
-            font-family: 'Figtree', sans-serif;
-            background-color: #f8f9fa;
-        }
 
         .course-list-item {
-            transition: background-color 0.2s ease-in-out;
+            transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
         }
 
         .course-list-item:hover {
-            background-color: #fff;
-            box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-            border-radius: .375rem;
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
         }
 
         .course-list-item img {
@@ -30,81 +25,79 @@
 
         @media (min-width: 576px) {
             .course-list-item img {
-                width: 256px; /* Ancho fijo para la imagen en pantallas sm y superiores */
+                width: 256px; 
             }
         }
-        
+
     </style>
 </head>
 
 <body>
 
 
-    <div layout:fragment="content">
+<div layout:fragment="content">
 
+    <!-- FORMULARIO PRINCIPAL (DESKTOP) -->
+    <form th:action="@{/courses}" method="get" id="desktop-filter-form">
         <div class="container my-5">
             <div class="row">
                 <!-- Sidebar de Filtros (visible en pantallas grandes) -->
                 <aside class="col-lg-3 d-none d-lg-block">
                     <h4 class="mb-3">Filtros</h4>
+                    
+                    <!-- Ordenar por -->
                     <div class="mb-4">
                         <label for="sort-by" class="form-label fw-semibold">Ordenar por</label>
-                        <select class="form-select" id="sort-by">
-                            <option selected>Más recientes</option>
-                            <option value="1">Más alumnos</option>
-                            <option value="2">Mejor calificado</option>
+                        <select class="form-select" id="sort-by" name="sort">
+                            <option value="createdAt_desc" th:selected="${selectedSort == 'createdAt_desc'}">Más recientes</option>
+                            <option value="createdAt_asc" th:selected="${selectedSort == 'createdAt_asc'}">Más antiguos</option>
+                            <option value="name_asc" th:selected="${selectedSort == 'name_asc'}">Nombre (A-Z)</option>
+                            <option value="name_desc" th:selected="${selectedSort == 'name_desc'}">Nombre (Z-A)</option>
                         </select>
                     </div>
 
+                    <!-- Categorías -->
                     <div class="mb-4">
                         <p class="fw-semibold">Categorías</p>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="cat1">
-                            <label class="form-check-label" for="cat1">Desarrollo web</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="cat2">
-                            <label class="form-check-label" for="cat2">Diseño web</label>
+                        <div class="form-check" th:each="category : ${allCategories}">
+                            <input class="form-check-input" type="checkbox" name="categories"
+                                   th:value="${category.id}"
+                                   th:id="'cat-' + ${category.id}"
+                                   th:checked="${selectedCategories.contains(category.id)}">
+                            <label class="form-check-label" th:for="'cat-' + ${category.id}" th:text="${category.name}"></label>
                         </div>
                     </div>
 
+                    <!-- Niveles -->
                     <div class="mb-4">
                         <p class="fw-semibold">Niveles</p>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="level1">
-                            <label class="form-check-label" for="level1">Nivel básico</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="level2">
-                            <label class="form-check-label" for="level2">Nivel intermedio</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="level3">
-                            <label class="form-check-label" for="level3">Nivel avanzado</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="level4">
-                            <label class="form-check-label" for="level4">Todos los niveles</label>
+                        <div class="form-check" th:each="level : ${allLevels}">
+                            <input class="form-check-input" type="checkbox" name="levels"
+                                   th:value="${level.id}"
+                                   th:id="'level-' + ${level.id}"
+                                   th:checked="${selectedLevels.contains(level.id)}">
+                            <label class="form-check-label" th:for="'level-' + ${level.id}" th:text="${level.name}"></label>
                         </div>
                     </div>
 
+                    <!-- Precios -->
                     <div class="mb-4">
                         <p class="fw-semibold">Precios</p>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="price1">
-                            <label class="form-check-label" for="price1">Gratis</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="price2">
-                            <label class="form-check-label" for="price2">De pago</label>
+                        <div class="form-check" th:each="price : ${allPrices}">
+                            <input class="form-check-input" type="checkbox" name="prices"
+                                   th:value="${price.id}"
+                                   th:id="'price-' + ${price.id}"
+                                   th:checked="${selectedPrices.contains(price.id)}">
+                            <label class="form-check-label" th:for="'price-' + ${price.id}" th:text="${price.name}"></label>
                         </div>
                     </div>
 
-                    <button class="btn btn-primary w-100">Aplicar filtros</button>
+                    <button class="btn btn-primary w-100" type="submit">Aplicar filtros</button>
                 </aside>
 
                 <!-- Contenido Principal: Cursos -->
                 <div class="col-lg-9">
+
                     <!-- Botón de filtros para móviles -->
                     <div class="d-grid d-lg-none mb-4">
                         <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters" aria-controls="offcanvasFilters">
@@ -112,166 +105,171 @@
                         </button>
                     </div>
 
-
-                    <!-- Barra de Búsqueda -->
+                    <!-- Barra de Búsqueda (Parte del formulario principal) -->
                     <div class="input-group mb-4">
-                        <input type="text" class="form-control" placeholder="Buscar curso...">
-                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Buscar curso..." 
+                               name="search" th:value="${selectedSearchTerm}">
+                        <button class="btn btn-outline-primary" type="submit" id="button-search">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
 
-                    <!-- Lista de Cursos -->
                     <div class="list-unstyled">
-                        <!-- Ejemplo de un curso -->
-                        <a href="/courses/detalle" class="text-decoration-none text-dark">
-                            <div class="d-block d-sm-flex p-2 mb-3 course-list-item">
-                                <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/portadas/crea-tu-sistema-de-citas-medicas-con-laravel.png" class="rounded" alt="Crea tu sistema de citas médicas con Laravel">
-                                <div class="flex-grow-1 mt-2 mt-sm-0 ms-sm-4">
-                                    <h5 class="mb-1">Crea tu sistema de citas médicas con Laravel</h5>
-                                    <p class="text-muted small mb-1">Domina Laravel y Livewire construyendo un sistema de Citas, Doctores y Pacientes.</p>
-                                    <p class="text-muted small mb-2">Prof: Victor Arana Flores</p>
-                                    <div>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <span class="text-muted small ms-1">(5)</span>
-                                    </div>
-                                </div>
-                                <div class="mt-2 mt-sm-0 ms-sm-4 text-sm-end">
-                                    <p class="fw-bold fs-5 mb-0">10.00 USD</p>
-                                    <p class="text-muted text-decoration-line-through small">35.00 USD</p>
-                                </div>
-                            </div>
-                        </a>
-                        <!-- Ejemplo de un curso -->
-                        <a href="/courses/detalle" class="text-decoration-none text-dark">
-                            <div class="d-block d-sm-flex p-2 mb-3 course-list-item">
-                                <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/portadas/crea-paquetes-laravel-php-gestor-de-temas-desde-cero.png" class="rounded" alt="Aprende crear paquetes Laravel">
-                                <div class="flex-grow-1 mt-2 mt-sm-0 ms-sm-4">
-                                    <h5 class="mb-1">Aprende crear paquetes Laravel: Gestor de Temas desde Cero</h5>
-                                    <p class="text-muted small mb-1">Domina Laravel: Paquetes, Temas, Artisan y PHP 8+</p>
-                                    <p class="text-muted small mb-2">Prof: Victor Arana Flores</p>
-                                    <div>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <span class="text-muted small ms-1">(5)</span>
-                                    </div>
-                                </div>
-                                <div class="mt-2 mt-sm-0 ms-sm-4 text-sm-end">
-                                    <p class="fw-bold fs-5 mb-0">10.00 USD</p>
-                                    <p class="text-muted text-decoration-line-through small">35.00 USD</p>
-                                </div>
-                            </div>
-                        </a>
-                        <!-- Ejemplo de un curso (Gratis) -->
-                        <a href="/courses/detalle" class="text-decoration-none text-dark">
-                            <div class="d-block d-sm-flex p-2 mb-3 course-list-item">
-                                <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/portadas/fundamentos-de-programacion-con-pseint.jpg" class="rounded" alt="Fundamentos de Programación">
-                                <div class="flex-grow-1 mt-2 mt-sm-0 ms-sm-4">
-                                    <h5 class="mb-1">Fundamentos de Programación en pseudocodigo con PSeInt</h5>
-                                    <p class="text-muted small mb-1">Domina los Fundamentos de Programación con PSeInt en este curso de alto rendimiento.</p>
-                                    <p class="text-muted small mb-2">Prof: Victor Arana Flores</p>
-                                    <div>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star text-warning"></i>
-                                        <i class="fas fa-star-half-alt text-warning"></i>
-                                        <span class="text-muted small ms-1">(4.97)</span>
-                                    </div>
-                                </div>
-                                <div class="mt-2 mt-sm-0 ms-sm-4 text-sm-end">
-                                    <p class="fw-bold fs-5 mb-0 text-success">Gratis</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+                        
+                        <div th:if="${courses.content.isEmpty()}" class="alert alert-info text-center" role="alert">
+                            No se encontraron cursos que coincidan con tu búsqueda.
+                        </div>
 
-                    <!-- Paginación -->
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center mt-5">
-                            <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
-                        </ul>
-                    </nav>
+                        <!-- Bucle de cursos -->
+                        <a th:each="course : ${courses.content}" 
+                           th:href="@{/courses/{slug}(slug=${course.slug})}" 
+                           class="text-decoration-none text-dark">
+                            
+                            <div class="d-block d-sm-flex mb-3 course-list-item bg-white shadow-sm rounded overflow-hidden">
+                                
+                                <img th:src="${course.image}" class="" th:alt="${course.name}">
+                                
+                                <div class="flex-grow-1 p-3">
+                                    <h5 class="mb-1" th:text="${course.name}">Nombre del Curso</h5>
+                                    <p class="text-muted small mb-1" th:text="${course.summary}">Resumen del curso.</p>
+                                    <p class="text-muted small mb-2" th:text="'Prof: ' + ${course.instructor.name}">Profesor</p>
+                                    
+                                    <div>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <span class="text-muted small ms-1">(5)</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-sm-end p-3">
+                                    <p class="fw-bold fs-5 mb-0" 
+                                       th:text="${course.price.name}"
+                                       th:classappend="${course.price.name == 'Gratis'} ? 'text-success' : ''">
+                                       Precio
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- Fin del bucle de cursos -->
+
+                    </div>
+                    <!-- *** FIN DEL DISEÑO DE LISTA *** -->
+
+
+                    <!-- Paginación Dinámica -->
+                    <div th:replace="~{fragments/pagination :: paginador(pagina=${courses})}"></div>
 
                 </div>
             </div>
         </div>
-        
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilters" aria-labelledby="offcanvasFiltersLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasFiltersLabel">Filtros</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <!-- Contenido de los filtros (igual que el sidebar) -->
+    </form>
+    
+    <!-- FORMULARIO MÓVIL (OFFCANVAS) -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilters" aria-labelledby="offcanvasFiltersLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasFiltersLabel">Filtros</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form th:action="@{/courses}" method="get" id="mobile-filter-form">
+                
+                <input type="hidden" name="search" th:value="${selectedSearchTerm}">
+
+                <!-- Ordenar por (Móvil) -->
                 <div class="mb-4">
                     <label for="sort-by-mobile" class="form-label fw-semibold">Ordenar por</label>
-                    <select class="form-select" id="sort-by-mobile">
-                        <option selected>Más recientes</option>
-                        <option value="1">Más alumnos</option>
-                        <option value="2">Mejor calificado</option>
+                    <select class="form-select" id="sort-by-mobile" name="sort">
+                        <option value="createdAt_desc" th:selected="${selectedSort == 'createdAt_desc'}">Más recientes</option>
+                        <option value="createdAt_asc" th:selected="${selectedSort == 'createdAt_asc'}">Más antiguos</option>
+                        <option value="name_asc" th:selected="${selectedSort == 'name_asc'}">Nombre (A-Z)</option>
+                        <option value="name_desc" th:selected="${selectedSort == 'name_desc'}">Nombre (Z-A)</option>
                     </select>
                 </div>
 
+                <!-- Categorías (Móvil) -->
                 <div class="mb-4">
                     <p class="fw-semibold">Categorías</p>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="cat1-mobile">
-                        <label class="form-check-label" for="cat1-mobile">Desarrollo web</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="cat2-mobile">
-                        <label class="form-check-label" for="cat2-mobile">Diseño web</label>
+                    <div class="form-check" th:each="category : ${allCategories}">
+                        <input class="form-check-input" type="checkbox" name="categories"
+                               th:value="${category.id}"
+                               th:id="'cat-mobile-' + ${category.id}"
+                               th:checked="${selectedCategories.contains(category.id)}">
+                        <label class="form-check-label" th:for="'cat-mobile-' + ${category.id}" th:text="${category.name}"></label>
                     </div>
                 </div>
 
+                <!-- Niveles (Móvil) -->
                 <div class="mb-4">
                     <p class="fw-semibold">Niveles</p>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="level1-mobile">
-                        <label class="form-check-label" for="level1-mobile">Nivel básico</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="level2-mobile">
-                        <label class="form-check-label" for="level2-mobile">Nivel intermedio</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="level3-mobile">
-                        <label class="form-check-label" for="level3-mobile">Nivel avanzado</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="level4-mobile">
-                        <label class="form-check-label" for="level4-mobile">Todos los niveles</label>
+                    <div class="form-check" th:each="level : ${allLevels}">
+                        <input class="form-check-input" type="checkbox" name="levels"
+                               th:value="${level.id}"
+                               th:id="'level-mobile-' + ${level.id}"
+                               th:checked="${selectedLevels.contains(level.id)}">
+                        <label class="form-check-label" th:for="'level-mobile-' + ${level.id}" th:text="${level.name}"></label>
                     </div>
                 </div>
 
+                <!-- Precios (Móvil) -->
                 <div class="mb-4">
                     <p class="fw-semibold">Precios</p>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="price1-mobile">
-                        <label class="form-check-label" for="price1-mobile">Gratis</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="price2-mobile">
-                        <label class="form-check-label" for="price2-mobile">De pago</label>
+                    <div class="form-check" th:each="price : ${allPrices}">
+                        <input class="form-check-input" type="checkbox" name="prices"
+                               th:value="${price.id}"
+                               th:id="'price-mobile-' + ${price.id}"
+                               th:checked="${selectedPrices.contains(price.id)}">
+                        <label class="form-check-label" th:for="'price-mobile-' + ${price.id}" th:text="${price.name}"></label>
                     </div>
                 </div>
+                
                 <div class="d-grid">
-                    <button class="btn btn-primary">Aplicar filtros</button>
+                    <button class="btn btn-primary" type="submit">Aplicar filtros</button>
                 </div>
-            </div>
+            </form>
         </div>
-
     </div>
+
+</div>
+
+<!-- SCRIPT PARA LIMPIAR LA URL -->
+<div layout:fragment="js">
+    <script th:inline="javascript">
+    /* <![CDATA[ */
+        
+        function prepareFormSubmit(event) {
+            const form = event.target;
+            
+            const textInputs = form.querySelectorAll('input[type="text"][name]');
+            textInputs.forEach(input => {
+                if (input.value === '') {
+                    input.disabled = true;
+                }
+            });
+
+            const selectInputs = form.querySelectorAll('select[name="sort"]');
+            selectInputs.forEach(select => {
+                if (select.value === 'createdAt_desc') {
+                    select.disabled = true;
+                }
+            });
+        }
+    
+        const desktopForm = document.getElementById('desktop-filter-form');
+        if (desktopForm) {
+            desktopForm.addEventListener('submit', prepareFormSubmit);
+        }
+    
+        const mobileForm = document.getElementById('mobile-filter-form');
+        if (mobileForm) {
+            mobileForm.addEventListener('submit', prepareFormSubmit);
+        }
+    
+    /* ]]> */
+    </script>
+</div>
 
 </body>
 

@@ -10,11 +10,17 @@ import com.example.codersfree.model.Level;
 import com.example.codersfree.model.Price;
 import com.example.codersfree.model.User;
 import com.example.codersfree.repository.CourseRepository;
+import com.example.codersfree.repository.specification.CourseSpecification;
+import com.example.codersfree.web.util.PageWrapper;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +47,15 @@ public class CourseService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Course> findByInstructorEmail(String email) {
         return courseRepository.findByInstructorEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public PageWrapper<Course> findByInstructorEmailPaginate(String email, Pageable pageable) {
+        Page<Course> courses = courseRepository.findByInstructorEmail(email, pageable);
+        return new PageWrapper<>(courses);
     }
 
     @Transactional(readOnly = true)
@@ -61,6 +73,49 @@ public class CourseService {
     @Transactional(readOnly = true)
     public List<Course> findAll() {
         return courseRepository.findAll();
+    }
+
+    public List<Course> getPublishedCourses() {
+        return courseRepository.findByStatus(CourseStatus.PUBLISHED);
+    }
+
+    //Ultimos cursos publicados
+    public List<Course> getLatestPublishedCourses() {
+        Pageable limit = PageRequest.of(0, 20);
+        return courseRepository.findByStatusOrderByCreatedAtDesc(CourseStatus.PUBLISHED, limit);
+    }
+
+    //Filtro de cursos
+    public PageWrapper<Course> searchAndFilterCourses(
+            String searchTerm,
+            List<Long> categoryIds,
+            List<Long> levelIds,
+            List<Long> priceIds,
+            Pageable pageable) {
+
+        Specification<Course> spec = CourseSpecification.hasStatus(CourseStatus.PUBLISHED);
+
+        if (searchTerm != null && !searchTerm.isBlank()) {
+            spec = spec.and(CourseSpecification.nameContains(searchTerm));
+        }
+
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            spec = spec.and(CourseSpecification.inCategories(categoryIds));
+        }
+
+        if (levelIds != null && !levelIds.isEmpty()) {
+            spec = spec.and(CourseSpecification.inLevels(levelIds));
+        }
+
+        if (priceIds != null && !priceIds.isEmpty()) {
+            spec = spec.and(CourseSpecification.inPrices(priceIds));
+        }
+
+        Page<Course> courses = courseRepository.findAll(spec, pageable);
+
+        return new PageWrapper<>(courses);
+
+        /* return courseRepository.findAll(spec, pageable); */
     }
 
     //Transacciones
@@ -84,7 +139,7 @@ public class CourseService {
                 .level(level)
                 .price(price)
                 .instructor(instructor)
-                .status(CourseStatus.DRAFT)
+                .status(CourseStatus.PUBLISHED)
                 .build();
 
         return courseRepository.save(course);

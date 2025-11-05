@@ -11,6 +11,9 @@ import com.example.codersfree.model.Course;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +21,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/instructor")
@@ -35,10 +36,22 @@ public class CourseInstructorController {
     private PriceService priceService;
 
     @GetMapping
-    public String index(Model model, Authentication authentication) {
+    public String index(
+        Model model, 
+        Authentication authentication,
+        @PageableDefault(
+            size = 10,
+            page = 0,
+            sort = "id",
+            direction = Sort.Direction.DESC
+        ) Pageable pageable
+    ) {
         String email = authentication.getName();
-        List<Course> courses = courseService.findByInstructorEmail(email);
-        model.addAttribute("courses", courses);
+        /* List<Course> courses = courseService.findByInstructorEmail(email);
+        model.addAttribute("courses", courses); */
+
+        model.addAttribute("courses", courseService.findByInstructorEmailPaginate(email, pageable));
+
         return "instructor/courses/index";
     }
 

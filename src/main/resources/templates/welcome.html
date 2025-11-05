@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/app}">
+    layout:decorate="~{layouts/app}">
 
 <head>
     <title>Coders Free | Cursos de desarrollo web online</title>
@@ -9,33 +9,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     <style>
-        /* Estilos personalizados para ajustar el diseño */
-        body {
-            font-family: 'Figtree', sans-serif;
-            background-color: #f8f9fa;
-        }
 
-        .navbar-brand img {
-            height: 32px;
-        }
-
-        .hero-carousel .carousel-item img {
-            aspect-ratio: 3/1;
-            object-fit: cover;
-        }
-
-        @media (max-width: 768px) {
-            .hero-carousel .carousel-item img {
-                aspect-ratio: 1/1;
-            }
-        }
-        
         .cta-section {
             background-image: url('https://codersfree.com/img/home/aprende-programar.jpg');
             background-size: cover;
             background-position: center;
             background-blend-mode: multiply;
             background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .summary-section {
+            background-image: url('https://codersfree.com/img/home/resumen.jpeg');
+            background-size: cover;
+            background-position: center;
+            min-height: 400px;
         }
 
         .course-card {
@@ -46,50 +33,64 @@
             transform: translateY(-5px);
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
-        
-        .summary-section {
-            background-image: url('https://codersfree.com/img/home/resumen.jpeg');
-            background-size: cover;
-            background-position: center;
-            min-height: 400px;
-        }
 
+        .img-cover {
+            aspect-ratio: 3 / 1;
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        /* Estilo para la imagen de la tarjeta de curso (RESTAURADO) */
+        .course-card-img {
+            aspect-ratio: 16 / 9; /* Proporción 16:9 para las imágenes del curso */
+            object-fit: cover;
+        }
+        
+        /* ESTILOS GLOBALES DE SWIPER (RESTAURADOS) */
         .swiper-button-next,
         .swiper-button-prev {
             background-color: white;
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            color: #0d6efd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            color: #0d6efd; /* Color azul de Bootstrap */
         }
-         .swiper-button-next:after,
+
+        .swiper-button-next:after,
         .swiper-button-prev:after {
             font-size: 1.2rem;
             font-weight: bold;
         }
+        
     </style>
 </head>
 
 <body>
-    
+
     <div layout:fragment="content">
 
-        <!-- Carrusel Principal (Hero) -->
-        <section class="mb-5">
-             <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                  <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <!-- Imagenes de portada -->
+        <section class="swiper covers-swiper">
+            <div class="swiper-wrapper" th:if="${!covers.isEmpty()}">
+                <div class="swiper-slide" th:each="cover : ${covers}">
+                    <img th:src="${cover.image}"
+                        class="img-cover" th:alt="${cover.title}">
                 </div>
-                <div class="carousel-inner hero-carousel">
-                  <div class="carousel-item active">
-                    <picture>
-                        <source media="(min-width: 768px)" srcset="https://codersfree.nyc3.cdn.digitaloceanspaces.com/covers/nl4f87AoTNNINxCCouHNSnltpflWUTfxSUkbVn7T.jpg">
-                        <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/covers/3syKp0s2LcpyMMy8cWKCm7OAwoakqAh1kTZM7TVl.jpg" class="d-block w-100" alt="Banner Principal">
-                      </picture>
-                  </div>
+            </div>
+
+            <div class="swiper-wrapper" th:if="${covers.isEmpty()}">
+                <div class="swiper-slide">
+                    <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/covers/7p8AnvUizQOgl0DIAmwU48hHx01Xhp6MdJMeALZZ.png"
+                        class="img-cover" alt="Bienvenido a Coders Free">
                 </div>
-              </div>
+            </div>
+
+            <div class="swiper-pagination covers-swiper-pagination"></div>
+
+            <div class="swiper-button-next covers-swiper-next"></div>
+            <div class="swiper-button-prev covers-swiper-prev"></div>
         </section>
 
         <!-- Sección de Contenido -->
@@ -98,31 +99,39 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6 mb-4 text-center">
                     <a href="#">
-                        <img src="https://codersfree.com/img/servicios/cursos.jpeg" class="img-fluid rounded-3 mb-3" alt="Cursos Online">
+                        <img src="https://codersfree.com/img/servicios/cursos.jpeg" class="img-fluid rounded-3 mb-3"
+                            alt="Cursos Online">
                     </a>
                     <h5 class="fw-semibold"><a href="#" class="text-decoration-none text-dark">Cursos online</a></h5>
-                    <p class="text-muted small">Encuentra los mejores cursos de Laravel en español. <a href="#" class="text-primary fw-semibold">Ver cursos</a></p>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4 text-center">
-                     <a href="#">
-                        <img src="https://codersfree.com/img/servicios/desarrollo.jpeg" class="img-fluid rounded-3 mb-3" alt="Diseño Web">
-                    </a>
-                    <h5 class="fw-semibold"><a href="#" class="text-decoration-none text-dark">Diseño web</a></h5>
-                    <p class="text-muted small">Escríbenos y nos pondremos en contacto contigo. <a href="#" class="text-primary fw-semibold">Contáctanos</a></p>
+                    <p class="text-muted small">Encuentra los mejores cursos de Laravel en español. <a href="#"
+                            class="text-primary fw-semibold">Ver cursos</a></p>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 text-center">
                     <a href="#">
-                        <img src="https://codersfree.com/img/servicios/asesorias.jpg" class="img-fluid rounded-3 mb-3" alt="Asesorías">
+                        <img src="https://codersfree.com/img/servicios/desarrollo.jpeg" class="img-fluid rounded-3 mb-3"
+                            alt="Diseño Web">
                     </a>
-                    <h5 class="fw-semibold"><a href="#" class="text-decoration-none text-dark">Asesorías</a></h5>
-                    <p class="text-muted small">¿Necesitas ayuda para aprender algún tema? <a href="#" class="text-primary fw-semibold">Escríbenos</a></p>
+                    <h5 class="fw-semibold"><a href="#" class="text-decoration-none text-dark">Diseño web</a></h5>
+                    <p class="text-muted small">Escríbenos y nos pondremos en contacto contigo. <a href="#"
+                            class="text-primary fw-semibold">Contáctanos</a></p>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 text-center">
-                     <a href="#">
-                        <img src="https://codersfree.com/img/servicios/blog.jpeg" class="img-fluid rounded-3 mb-3" alt="Blog">
+                    <a href="#">
+                        <img src="https://codersfree.com/img/servicios/asesorias.jpg" class="img-fluid rounded-3 mb-3"
+                            alt="Asesorías">
+                    </a>
+                    <h5 class="fw-semibold"><a href="#" class="text-decoration-none text-dark">Asesorías</a></h5>
+                    <p class="text-muted small">¿Necesitas ayuda para aprender algún tema? <a href="#"
+                            class="text-primary fw-semibold">Escríbenos</a></p>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 text-center">
+                    <a href="#">
+                        <img src="https://codersfree.com/img/servicios/blog.jpeg" class="img-fluid rounded-3 mb-3"
+                            alt="Blog">
                     </a>
                     <h5 class="fw-semibold"><a href="#" class="text-decoration-none text-dark">Blog</a></h5>
-                    <p class="text-muted small">Encuentra artículos de programación y actualidad. <a href="#" class="text-primary fw-semibold">Leer artículos</a></p>
+                    <p class="text-muted small">Encuentra artículos de programación y actualidad. <a href="#"
+                            class="text-primary fw-semibold">Leer artículos</a></p>
                 </div>
             </div>
         </section>
@@ -135,71 +144,56 @@
             </div>
         </section>
 
-        <!-- Carrusel de Últimos Cursos -->
+        <!-- Carrusel de Últimos Cursos (MODIFICADO) -->
         <section class="container my-5 py-5">
             <h2 class="text-center fw-bold">ÚLTIMOS CURSOS</h2>
-            <p class="text-center text-muted mb-5">Entérate cuáles son los últimos <b>cursos de desarrollo web</b> subidos.</p>
-            <!-- Swiper -->
-            <div class="swiper courses-swiper">
+            <p class="text-center text-muted mb-5">Entérate cuáles son los últimos <b>cursos de desarrollo web</b>
+                subidos.</p>
+            
+            <!-- Contenedor Swiper (SOLO SI HAY CURSOS) -->
+            <div class="swiper courses-swiper" th:if="${!latestCourses.isEmpty()}">
+                
+                <!-- Bucle dinámico con Thymeleaf -->
                 <div class="swiper-wrapper">
-                    <!-- Ejemplo de Slide/Curso -->
-                    <div class="swiper-slide">
-                         <div class="card h-100 course-card">
-                            <img src="https://placehold.co/600x400/f05340/ffffff?text=Laravel+10" class="card-img-top" alt="Curso de Laravel">
+                    
+                    <div class="swiper-slide" th:each="course : ${latestCourses}">
+                        <div class="card h-100 course-card">
+                            <img th:src="${course.image}" 
+                                 class="card-img-top course-card-img"
+                                 th:alt="${course.name}">
+                            
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">Aprende Laravel 10 desde cero</h5>
-                                <p class="card-text text-muted flex-grow-1">Domina el framework PHP más popular del mundo.</p>
+                                <h5 class="card-title" th:text="${course.name}">
+                                    Nombre del Curso
+                                </h5>
+                                <p class="card-text text-muted flex-grow-1" th:text="${course.summary}">
+                                    Resumen corto del curso.
+                                </p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <p class="mb-0 fw-bold fs-5 text-primary">$19.99</p>
-                                    <a href="#" class="btn btn-primary btn-sm">Ver curso</a>
+                                    <p class="mb-0 fw-bold fs-5 text-primary" th:text="${course.price.name}">
+                                        $Precio
+                                    </p>
+                                    <a th:href="@{'/courses/' + ${course.slug}}" class="btn btn-primary btn-sm">
+                                        Ver curso
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="swiper-slide">
-                        <div class="card h-100 course-card">
-                           <img src="https://placehold.co/600x400/4299e1/ffffff?text=E-commerce" class="card-img-top" alt="Curso de E-commerce">
-                           <div class="card-body d-flex flex-column">
-                               <h5 class="card-title">Aprende a crear un E-commerce</h5>
-                               <p class="card-text text-muted flex-grow-1">Crea tu propia tienda online con Laravel y Livewire.</p>
-                               <div class="d-flex justify-content-between align-items-center">
-                                   <p class="mb-0 fw-bold fs-5 text-primary">$29.99</p>
-                                   <a href="#" class="btn btn-primary btn-sm">Ver curso</a>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-                   <div class="swiper-slide">
-                        <div class="card h-100 course-card">
-                           <img src="https://placehold.co/600x400/38b2ac/ffffff?text=Tailwind+CSS" class="card-img-top" alt="Curso de Tailwind CSS">
-                           <div class="card-body d-flex flex-column">
-                               <h5 class="card-title">Curso Tailwind CSS desde cero</h5>
-                               <p class="card-text text-muted flex-grow-1">Aprende el framework CSS que está revolucionando la web.</p>
-                               <div class="d-flex justify-content-between align-items-center">
-                                   <p class="mb-0 fw-bold fs-5 text-primary">$14.99</p>
-                                   <a href="#" class="btn btn-primary btn-sm">Ver curso</a>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-                   <div class="swiper-slide">
-                    <div class="card h-100 course-card">
-                       <img src="https://placehold.co/600x400/667eea/ffffff?text=AdminLTE" class="card-img-top" alt="Curso de AdminLTE">
-                       <div class="card-body d-flex flex-column">
-                           <h5 class="card-title">AdminLTE con Laravel y Jetstream</h5>
-                           <p class="card-text text-muted flex-grow-1">Crea un panel de administración profesional.</p>
-                           <div class="d-flex justify-content-between align-items-center">
-                               <p class="mb-0 fw-bold fs-5 text-primary">$24.99</p>
-                               <a href="#" class="btn btn-primary btn-sm">Ver curso</a>
-                           </div>
-                       </div>
-                   </div>
-               </div>
+
                 </div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
+
+                <!-- Clases de botones únicas -->
+                <div class="swiper-button-next courses-swiper-next"></div>
+                <div class="swiper-button-prev courses-swiper-prev"></div>
+            </div>
+            
+            <!-- Mensaje de Alerta (SOLO SI NO HAY CURSOS) -->
+            <div th:if="${latestCourses.isEmpty()}" class="alert alert-info" role="alert">
+                No hay cursos para mostrar en este momento.
             </div>
         </section>
+        <!-- Fin de Sección de Cursos -->
 
         <!-- Sección de Resumen -->
         <section class="my-5">
@@ -212,18 +206,20 @@
                         <div class="p-5 w-100">
                             <h2 class="text-center fw-bold text-uppercase">Resumen de la web</h2>
                             <p class="text-center mb-3">La formación online es el presente</p>
-                             <div class="d-flex justify-content-center mb-4">
+                            <div class="d-flex justify-content-center mb-4">
                                 <div style="width: 144px; height: 2px; background-color: #dc3545;"></div>
                             </div>
                             <div class="row text-center g-3">
                                 <div class="col-6">
-                                    <div class="border border-white rounded p-4 h-100 d-flex flex-column justify-content-center">
+                                    <div
+                                        class="border border-white rounded p-4 h-100 d-flex flex-column justify-content-center">
                                         <h3 class="display-5 fw-bold">40</h3>
                                         <span>Cursos</span>
                                     </div>
                                 </div>
-                                 <div class="col-6">
-                                    <div class="border border-white rounded p-4 h-100 d-flex flex-column justify-content-center">
+                                <div class="col-6">
+                                    <div
+                                        class="border border-white rounded p-4 h-100 d-flex flex-column justify-content-center">
                                         <h3 class="display-5 fw-bold">148</h3>
                                         <span>Artículos</span>
                                     </div>
@@ -240,15 +236,19 @@
         <section class="container my-5 py-5">
             <h2 class="text-center fw-bold">RESEÑAS POPULARES</h2>
             <p class="text-center text-muted mb-5">Mira lo que opinan algunos de nuestros estudiantes.</p>
-             <!-- Swiper -->
-             <div class="swiper reviews-swiper">
+            <!-- Swiper -->
+            <div class="swiper reviews-swiper">
                 <div class="swiper-wrapper pb-5">
                     <!-- Slide de Reseña -->
                     <div class="swiper-slide">
                         <div class="d-flex flex-column align-items-center text-center">
-                            <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/profile-photos/Pz6pfaUyuG9aydlgXw5C93FwhxYGDekIG7cKSjoJ.jpg" alt="Avatar de estudiante" class="rounded-circle object-fit-cover position-relative z-1" style="width: 80px; height: 80px;">
+                            <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/profile-photos/Pz6pfaUyuG9aydlgXw5C93FwhxYGDekIG7cKSjoJ.jpg"
+                                alt="Avatar de estudiante" class="rounded-circle object-fit-cover position-relative z-1"
+                                style="width: 80px; height: 80px;">
                             <div class="bg-white rounded-4 shadow p-4 pt-5 mt-n5 w-100">
-                                <p class="text-muted fst-italic">"Extraordinario amigo muchas gracias por tu contenido. Por el simple hecho de ver como te quedo esta plataforma se ve que realmente sabes. Gracias de verdad bro.!!"</p>
+                                <p class="text-muted fst-italic">"Extraordinario amigo muchas gracias por tu contenido.
+                                    Por el simple hecho de ver como te quedo esta plataforma se ve que realmente sabes.
+                                    Gracias de verdad bro.!!"</p>
                                 <p class="fw-bold text-primary mb-0 mt-3">Mrdev</p>
                                 <small class="text-muted">Aprende Laravel Livewire desde cero</small>
                             </div>
@@ -257,39 +257,50 @@
                     <!-- Slide de Reseña -->
                     <div class="swiper-slide">
                         <div class="d-flex flex-column align-items-center text-center">
-                            <img src="https://ui-avatars.com/api/?name=A+S&amp;color=7F9CF5&amp;background=EBF4FF" alt="Avatar de estudiante" class="rounded-circle object-fit-cover position-relative z-1" style="width: 80px; height: 80px;">
+                            <img src="https://ui-avatars.com/api/?name=A+S&amp;color=7F9CF5&amp;background=EBF4FF"
+                                alt="Avatar de estudiante" class="rounded-circle object-fit-cover position-relative z-1"
+                                style="width: 80px; height: 80px;">
                             <div class="bg-white rounded-4 shadow p-4 pt-5 mt-n5 w-100">
-                                <p class="text-muted fst-italic">"Excelente curso, muy bien explicado paso a paso sin escapar de ningún detalle. 10 puntos."</p>
+                                <p class="text-muted fst-italic">"Excelente curso, muy bien explicado paso a paso sin
+                                    escapar de ningún detalle. 10 puntos."</p>
                                 <p class="fw-bold text-primary mb-0 mt-3">Abraham Salo</p>
                                 <small class="text-muted">Aprende Laravel 10 desde cero</small>
                             </div>
                         </div>
                     </div>
-                     <!-- Slide de Reseña -->
-                     <div class="swiper-slide">
+                    <!-- Slide de Reseña -->
+                    <div class="swiper-slide">
                         <div class="d-flex flex-column align-items-center text-center">
-                            <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/profile-photos/HR8EtQSD9yFfUCyNGa14TZa1w7Xrbe44TTEFrzCa.jpg" alt="Avatar de estudiante" class="rounded-circle object-fit-cover position-relative z-1" style="width: 80px; height: 80px;">
+                            <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/profile-photos/HR8EtQSD9yFfUCyNGa14TZa1w7Xrbe44TTEFrzCa.jpg"
+                                alt="Avatar de estudiante" class="rounded-circle object-fit-cover position-relative z-1"
+                                style="width: 80px; height: 80px;">
                             <div class="bg-white rounded-4 shadow p-4 pt-5 mt-n5 w-100">
-                                <p class="text-muted fst-italic">"Excelente curso, me encanta como el profesor lo hace ver sencillo y dominas facilmente el tema al finalizar el curso."</p>
+                                <p class="text-muted fst-italic">"Excelente curso, me encanta como el profesor lo hace
+                                    ver sencillo y dominas facilmente el tema al finalizar el curso."</p>
                                 <p class="fw-bold text-primary mb-0 mt-3">Daniel Bravo</p>
                                 <small class="text-muted">Curso Tailwind desde cero</small>
                             </div>
                         </div>
                     </div>
-                     <!-- Slide de Reseña -->
-                     <div class="swiper-slide">
+                    <!-- Slide de Reseña -->
+                    <div class="swiper-slide">
                         <div class="d-flex flex-column align-items-center text-center">
-                            <img src="https://ui-avatars.com/api/?name=J+F&amp;color=7F9CF5&amp;background=EBF4FF" alt="Avatar de estudiante" class="rounded-circle object-fit-cover position-relative z-1" style="width: 80px; height: 80px;">
+                            <img src="https://ui-avatars.com/api/?name=J+F&amp;color=7F9CF5&amp;background=EBF4FF"
+                                alt="Avatar de estudiante" class="rounded-circle object-fit-cover position-relative z-1"
+                                style="width: 80px; height: 80px;">
                             <div class="bg-white rounded-4 shadow p-4 pt-5 mt-n5 w-100">
-                                <p class="text-muted fst-italic">"Gracias Victor!!! seguía tus cursos desde youtube, pero esta plataforma es perfecta para no perderse ni una de tus lecciones. Muy recomendable."</p>
+                                <p class="text-muted fst-italic">"Gracias Victor!!! seguía tus cursos desde youtube,
+                                    pero esta plataforma es perfecta para no perderse ni una de tus lecciones. Muy
+                                    recomendable."</p>
                                 <p class="fw-bold text-primary mb-0 mt-3">Javi Fernández</p>
                                 <small class="text-muted">Aprende Laravel 10 desde cero</small>
                             </div>
                         </div>
                     </div>
                 </div>
-                 <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
+                <!-- Clases de botones únicas -->
+                <div class="swiper-button-next reviews-swiper-next"></div>
+                <div class="swiper-button-prev reviews-swiper-prev"></div>
             </div>
         </section>
 
@@ -299,53 +310,69 @@
         <!-- Swiper JS -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-        <!-- Inicialización de Swiper -->
-        <script>
-            // Carrusel de Cursos
-            const coursesSwiper = new Swiper('.courses-swiper', {
-                loop: true,
-                slidesPerView: 1,
-                spaceBetween: 30,
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
+        <script th:inline="javascript">
+            /* <![CDATA[ */
+
+            const coverCount = /*[[${covers.size()}]]*/ 0;
+            new Swiper(".covers-swiper", {
+                loop: coverCount > 1,
+                autoplay: {
+                    delay: 8000,
+                    disableOnInteraction: false,
                 },
-                breakpoints: {
-                    768: {
-                        slidesPerView: 2,
-                    },
-                    992: {
-                        slidesPerView: 3,
-                    },
-                    1200: {
-                        slidesPerView: 4,
-                    }
-                }
+                navigation: {
+                    nextEl: ".covers-swiper-next",
+                    prevEl: ".covers-swiper-prev",
+                },
+                pagination: {
+                    el: ".covers-swiper-pagination",
+                },
             });
 
-            // Carrusel de Reseñas
+            // Obtenemos la cantidad de cursos para el loop
+            const courseCount = /*[[${latestCourses != null ? latestCourses.size() : 0}]]*/ 0;
+            
+            // INICIALIZACIÓN CONDICIONAL DE SWIPER
+            if (courseCount > 0) {
+                new Swiper('.courses-swiper', {
+                    // El loop solo se activa si hay más cursos que los que se muestran (4)
+                    loop: courseCount > 4, 
+                    slidesPerView: 1,
+                    spaceBetween: 30,
+                    navigation: {
+                        nextEl: '.courses-swiper-next',
+                        prevEl: '.courses-swiper-prev',
+                    },
+                    breakpoints: {
+                        640: { slidesPerView: 1 },
+                        768: { slidesPerView: 2 },
+                        992: { slidesPerView: 3 },
+                        1200: { slidesPerView: 4 }
+                    }
+                });
+            }
+
             const reviewsSwiper = new Swiper('.reviews-swiper', {
                 loop: true,
                 slidesPerView: 1,
                 spaceBetween: 30,
                 grabCursor: true,
                 navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
+                    nextEl: '.reviews-swiper-next',
+                    prevEl: '.reviews-swiper-prev',
                 },
                 breakpoints: {
-                    768: {
-                        slidesPerView: 2,
-                    },
-                    1024: {
-                        slidesPerView: 3,
-                    },
+                    768: { slidesPerView: 2 },
+                    1024: { slidesPerView: 3 },
                 },
             });
+
+             /* ]]> */
         </script>
     </div>
-    
+
 
 </body>
 
 </html>
+

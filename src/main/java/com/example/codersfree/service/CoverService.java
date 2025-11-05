@@ -1,6 +1,7 @@
 package com.example.codersfree.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,11 @@ public class CoverService {
     public PageWrapper<Cover> findPaginate(Pageable pageable) {
         Page<Cover> covers = coverRepository.findAll(pageable);
         return new PageWrapper<>(covers);
+    }
+
+    public List<Cover> getActiveCoversForToday() {
+        LocalDate today = LocalDate.now();
+        return coverRepository.findCurrentlyActiveCovers(today);
     }
 
     @Transactional
