@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/instructor}">
+
+<head>
+    <title th:text="|Requerimientos: ${course.name}|">Requerimientos del Curso</title>
+    <meta name="description" content="Requerimientos del curso.">
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div th:replace="~{layouts/fragments/instructor/course-edit-nav :: navigation(course=${course}, activePage='curriculum')}"></div>
+        </div>
+
+        <div class="col-lg-9">
+            <div id="app" th:data-slug="${course.slug}">
+                <div class="d-flex justify-content-center my-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div layout:fragment="js">
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+    <script type="module" th:src="@{/js/pages/curriculum.js}"></script>
+
+</div>
+
+</body>
+</html>

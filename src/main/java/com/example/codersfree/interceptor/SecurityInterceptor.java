@@ -25,7 +25,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
         
         // Verificar anotación @Guest y estado de autenticación
         if (hasGuestAnnotation(handlerMethod) && isAuthenticated) {
-            response.sendRedirect("/inicio");
+            response.sendRedirect("/");
             return false;
         }
         

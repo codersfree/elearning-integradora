@@ -31,8 +31,12 @@
                             Información del curso
                         </h1>
 
-                        <form th:action="@{/instructor/courses/{slug}/edit(slug=${course.slug})}"
-                            th:object="${courseDto}" method="post" enctype="multipart/form-data">
+                        <form th:action="@{/instructor/courses/{slug}(slug=${course.slug})}"
+                            th:object="${courseDto}" 
+                            method="post" 
+                            enctype="multipart/form-data">
+
+                            <input type="hidden" name="_method" value="put">
 
                             <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
                                 <p class="fw-bold">Por favor, corrige los siguientes errores:</p>

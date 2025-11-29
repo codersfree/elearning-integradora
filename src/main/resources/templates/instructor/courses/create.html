@@ -23,7 +23,9 @@
                             COMPLETE ESTA INFORMACIÓN PARA CREAR UN CURSO
                         </h1>
 
-                        <form th:action="@{/instructor/courses/create}" th:object="${courseDto}" method="post">
+                        <form th:action="@{/instructor/courses}" 
+                            th:object="${courseDto}" 
+                            method="post">
 
                             <!-- Errores de validación -->
                             <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">

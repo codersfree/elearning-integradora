@@ -14,7 +14,9 @@ export const template = /* html */ `
             <div class="card shadow-sm border-0 rounded-lg">
                 <div class="card-body p-4 p-md-5">
 
-                    <h1 class="h3 fw-bold mb-0">Llega a tus estudiantes</h1>
+                    <h1 class="h3 fw-bold mb-0">
+                        Llega a tus estudiantes
+                    </h1>
                     <p class="text-muted mb-0">
                         Las metas que escribas aquí ayudarán a los estudiantes a decidir si
                         tu curso es el adecuado para ellos.

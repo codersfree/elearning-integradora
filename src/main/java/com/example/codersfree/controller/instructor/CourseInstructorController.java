@@ -69,9 +69,9 @@ public class CourseInstructorController {
         return "instructor/courses/create";
     }
 
-    @PostMapping("/courses/create")
+    @PostMapping("/courses")
     public String store(
-            @Valid @ModelAttribute("courseDto") CourseCreateDto courseDto,
+            @Valid @ModelAttribute CourseCreateDto courseDto,
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes,
             Authentication authentication) {
@@ -123,7 +123,7 @@ public class CourseInstructorController {
         return "instructor/courses/edit";
     }
 
-    @PostMapping("/courses/{slug}/edit")
+    @PutMapping("/courses/{slug}")
     public String update(
         @PathVariable String slug,
         @Valid @ModelAttribute("courseDto") CourseUpdateDto courseDto,
@@ -214,7 +214,7 @@ public class CourseInstructorController {
     }
 
     @GetMapping("/courses/{slug}/goals")
-    public String getGoalsPage(
+    public String goals(
         @PathVariable String slug, 
         Model model,
         Authentication authentication
@@ -227,7 +227,7 @@ public class CourseInstructorController {
     }
 
     @GetMapping("/courses/{slug}/requirements")
-    public String getRequirementsPage(
+    public String requirements(
             @PathVariable String slug,
             Model model,
             RedirectAttributes redirectAttributes,
@@ -238,6 +238,19 @@ public class CourseInstructorController {
         model.addAttribute("course", course);
 
         return "instructor/courses/requirements";
+    }
+
+    @GetMapping("/courses/{slug}/curriculum")
+    public String curriculum(
+        @PathVariable String slug, 
+        Model model,
+        Authentication authentication
+    ) {
+
+        Course course = courseService.findBySlugAndInstructorEmail(slug, authentication.getName());
+        model.addAttribute("course", course);
+
+        return "instructor/courses/curriculum";
     }
 
     @GetMapping("/courses/{slug}/messages")

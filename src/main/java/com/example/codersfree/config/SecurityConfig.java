@@ -44,6 +44,11 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", false)
                         .failureUrl("/login?error=true")
                         .permitAll())
+                .rememberMe(remember -> remember
+                        .key("uniqueAndSecret") // clave usada para firmar la cookie
+                        .tokenValiditySeconds(7 * 24 * 60 * 60) // duración: 7 días
+                        .rememberMeParameter("remember-me") // nombre del checkbox en el form
+                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")

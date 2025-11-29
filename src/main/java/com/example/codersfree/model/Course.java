@@ -2,12 +2,9 @@ package com.example.codersfree.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import com.example.codersfree.enums.CourseStatus;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +31,7 @@ public class Course {
     @Column(length = 255)
     private String summary;
 
-    @Lob // Para campos de texto largos
+    @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -64,7 +61,8 @@ public class Course {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relacion uno a mucho inversa
+    // --- Relaciones ManyToOne ---
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User instructor;
@@ -81,13 +79,16 @@ public class Course {
     @JoinColumn(name = "price_id", referencedColumnName = "id", nullable = false)
     private Price price;
 
-    //Relaciones uno a muchos
+    // --- Relaciones OneToMany CORREGIDAS ---
+    @Builder.Default
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Module> modules = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Requirement> requirements = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Goal> goals = new HashSet<>();
 
@@ -99,8 +100,6 @@ public class Course {
         if (imagePath == null || imagePath.isBlank()) {
             return "https://placehold.co/750x422/eeeeee/333333?text=Sin+Imagen";
         }
-
         return "/uploads/" + imagePath;
     }
-    
 }
