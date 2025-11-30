@@ -2,48 +2,39 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-  <nav th:fragment="paginador(pagina)" aria-label="Navegación de páginas">
-    
-    <ul class="pagination justify-content-end" 
-        th:if="${pagina.totalPages > 1}">
-
-      <li class="page-item" th:classappend="${pagina.isFirst()} ? 'disabled'">
-        <a class="page-link" 
-           th:href="${pagina.isFirst()} ? '#' : @{${currentUrl}(page=${pagina.number - 1}, size=${pagina.size})}" 
-           th:attr="tabindex=${pagina.isFirst()} ? '-1' : null">
-           Previous
-        </a>
-      </li>
-
-      <li class="page-item" th:if="${pagina.pageNumbers != null && pagina.pageNumbers[0] > 0}">
-          <a class="page-link" th:href="@{${currentUrl}(page=${pagina.pageNumbers[0] - 1}, size=${pagina.size})}">...</a>
-      </li>
-
-      <li class="page-item" 
-          th:each="num : ${pagina.pageNumbers}"
-          th:classappend="${num == pagina.number} ? 'active'">
-        
-        <a class="page-link" th:href="@{${currentUrl}(page=${num}, size=${pagina.size})}">
-          <span th:text="${num + 1}"></span>
-          <span th:if="${num == pagina.number}" class="sr-only">(current)</span>
-        </a>
-      </li>
-
-      <li class="page-item"
-          th:if="${pagina.pageNumbers != null && pagina.pageNumbers[pagina.pageNumbers.size() - 1] < pagina.totalPages - 1}">
-          <a class="page-link"
-              th:href="@{${currentUrl}(page=${pagina.pageNumbers[pagina.pageNumbers.size() - 1] + 1}, size=${pagina.size})}">...</a>
-      </li>
-
-      <li class="page-item" th:classappend="${pagina.isLast()} ? 'disabled'">
-        <a class="page-link" 
-           th:href="${pagina.isLast()} ? '#' : @{${currentUrl}(page=${pagina.number + 1}, size=${pagina.size})}"
-           th:attr="tabindex=${pagina.isLast()} ? '-1' : null">
-           Next
-        </a>
-      </li>
-    </ul>
-  </nav>
+    <div th:fragment="pagination(page, baseUrl)">
+        <nav aria-label="Navegación de páginas">
+            <ul class="pagination justify-content-center">
+                
+                <li th:class="${page.hasPrevious()} ? 'page-item' : 'page-item disabled'">
+                    <a class="page-link" 
+                       th:href="${page.hasPrevious()} ? @{${baseUrl}(page=${page.number - 1}, size=${page.size}, sort=${page.sort.toString().replace(': ', ',')})}"
+                       tabindex="-1" aria-disabled="true">
+                       Anterior
+                    </a>
+                </li>
+                
+                <li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" 
+                    th:class="${page.number == i} ? 'page-item active' : 'page-item'">
+                    <a class="page-link" 
+                       th:href="@{${baseUrl}(page=${i}, size=${page.size}, sort=${page.sort.toString().replace(': ', ',')})}">
+                       [[${i + 1}]]
+                       <span th:if="${page.number == i}" class="sr-only">(actual)</span>
+                    </a>
+                </li>
+                
+                <li th:class="${page.hasNext()} ? 'page-item' : 'page-item disabled'">
+                    <a class="page-link" 
+                       th:href="${page.hasNext()} ? @{${baseUrl}(page=${page.number + 1}, size=${page.size}, sort=${page.sort.toString().replace(': ', ',')})}">
+                       Siguiente
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="text-center mt-2">
+            Mostrando [[${page.size}]] registros. Página [[${page.number + 1}]] de [[${page.totalPages}]]. Total: [[${page.totalElements}]] registros.
+        </div>
+    </div>
 
 </body>
 </html>

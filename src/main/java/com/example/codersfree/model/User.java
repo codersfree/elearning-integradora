@@ -40,7 +40,7 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    //Carga ansiosa de roles
+    // Carga ansiosa de roles
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "role_user", // Nombre de la tabla intermedia

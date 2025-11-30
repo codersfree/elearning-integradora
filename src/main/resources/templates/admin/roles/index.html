@@ -94,7 +94,7 @@
 
                 </table>
 
-                <div th:replace="~{fragments/pagination :: paginador(pagina=${roles})}"></div>
+                <div th:replace="~{fragments/pagination :: pagination(page=${roles}, baseUrl='/admin/roles')}"></div>
                 
             </div>
         </div>

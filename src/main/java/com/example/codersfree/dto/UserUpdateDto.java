@@ -2,7 +2,7 @@ package com.example.codersfree.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.HashSet;
@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDto {
+public class UserUpdateDto {
     @NotBlank(message = "El nombre no puede estar vacío.")
     private String name;
 
@@ -21,10 +21,13 @@ public class UserDto {
     @NotBlank(message = "El correo electrónico no puede estar vacío.")
     private String email;
 
-    @NotBlank(message = "La contraseña no puede estar vacía.")
-    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres.")
-    private String password;
+    // Se usa Pattern para permitir cadena vacía o que cumpla el tamaño mínimo.
+    @Pattern(
+        regexp = "^$|.{6,255}",
+        message = "La contraseña debe estar vacía o tener al menos 6 caracteres."
+    )
+    private String password; 
     
     // Campo para recibir los IDs de los roles seleccionados
-    private Set<Long> roles = new HashSet<>(); 
+    private Set<Long> roles = new HashSet<>();
 }

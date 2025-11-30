@@ -37,7 +37,7 @@ public class RoleAdminController {
             direction = Sort.Direction.DESC
         ) Pageable pageable
     ) {
-        model.addAttribute("roles", roleService.findPaginate(pageable));
+        model.addAttribute("roles", roleService.paginate(pageable));
         return "admin/roles/index";
     }
 

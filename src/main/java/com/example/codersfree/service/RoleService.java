@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.codersfree.dto.RoleDto;
 import com.example.codersfree.model.Role;
 import com.example.codersfree.repository.RoleRepository;
-import com.example.codersfree.web.util.PageWrapper;
 
 @Service
 public class RoleService {
@@ -34,9 +33,8 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
-    public PageWrapper<Role> findPaginate(Pageable pageable) {
-        Page<Role> roles = roleRepository.findAll(pageable);
-        return new PageWrapper<>(roles);
+    public Page<Role> paginate(Pageable pageable) {
+        return roleRepository.findAll(pageable);
     }
 
     public Role save(RoleDto roleDto) {

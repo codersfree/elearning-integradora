@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        Dashboard Admin
+        Gestión de Usuarios
     </title>
 </head>
 
@@ -38,8 +38,70 @@
 
     <div layout:fragment="content">
 
-        <!-- En este fragmento debes agregar el contenido específico para la gestión de usuarios en el panel de administración. -->
-        <!-- Cuando agregues una nueva vista debe tener la misma estructura que esta. -->
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-primary" th:href="@{/admin/users/create}">
+                Nuevo Usuario
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 80px;">ID</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Email</th>
+                            <th scope="col" style="width: 150px;">Registro</th>
+                            <th scope="col" style="width: 160px; text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody th:if="${!users.content.isEmpty()}">
+                        <tr th:each="user : ${users.content}">
+
+                            <th scope="row" th:text="${user.id}">1</th>
+
+                            <td th:text="${user.name}">Nombre del Usuario</td>
+                            <td th:text="${user.email}">email@example.com</td>
+                            <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">2023-11-30</td>
+
+
+                            <td style="text-align: right;">
+
+                                <a th:href="@{/admin/users/{id}/edit(id=${user.id})}" class="btn btn-primary btn-sm"
+                                    style="margin-right: 5px;">
+                                    Editar
+                                </a>
+
+                                <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post"
+                                    style="display: inline;" class="form-delete">
+
+                                    <input type="hidden" name="_method" value="DELETE">
+
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+                    </tbody>
+
+                    <tbody th:if="${users.content.isEmpty()}">
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                No hay usuarios registrados.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+                <div th:replace="~{fragments/pagination :: pagination(page=${users}, baseUrl='/admin/users')}"></div>
+
+            </div>
+        </div>
 
     </div>
 
