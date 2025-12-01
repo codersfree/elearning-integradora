@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/app}">
+
+<head>
+    <title th:text="${currentLesson.name} + ' - ' + ${course.name}">Clase</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    
+    <style>
+        .plyr { 
+            border-radius: 0.5rem; 
+            overflow: hidden; 
+            width: 100%;
+        }
+        
+        /* CAMBIO AQUÍ: Altura dinámica para ocupar más espacio vertical */
+        .sidebar-content { 
+            /* 100% de la altura de pantalla MENOS el espacio de arriba (navbar) y un margen abajo */
+            max-height: calc(100vh - 8rem); 
+            overflow-y: auto; 
+        }
+        
+        /* Colores de estado */
+        .text-yellow { color: #fbbf24; }
+        .text-gray { color: #9ca3af; }
+        .cursor-pointer { cursor: pointer; }
+        
+        /* Ajuste tamaño toggle */
+        .form-switch .form-check-input {
+            width: 3em; 
+            height: 1.5em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main layout:fragment="content" class="container-fluid my-4 px-lg-5">
+        <div class="row g-4">
+            
+            <div class="col-lg-8">
+                
+                <div class="mb-4 shadow rounded overflow-hidden bg-dark">
+                    <video id="player" playsinline controls class="w-100">
+                        <source th:src="@{'/uploads/' + ${currentLesson.videoPath}}" type="video/mp4" />
+                    </video>
+                </div>
+
+                <h1 class="h3 fw-bold mb-3" th:text="${currentLesson.name}">Nombre de la lección</h1>
+
+                <div class="d-flex align-items-center mb-4">
+                    <form th:action="@{'/courses/' + ${course.slug} + '/learn/' + ${currentLesson.id} + '/toggle'}" method="POST" id="formToggle">
+                        <div class="form-check form-switch d-flex align-items-center ps-0">
+                            <input class="form-check-input ms-0 me-3 cursor-pointer" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                                   th:checked="${user.hasCompleted(currentLesson)}"
+                                   onchange="document.getElementById('formToggle').submit()">
+                            <label class="form-check-label fw-bold text-secondary cursor-pointer" for="flexSwitchCheckDefault">
+                                Marcar esta lección como culminada
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                <hr class="mb-4">
+
+                <div class="card border-0 shadow-sm bg-light">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <a th:if="${previous != null}" 
+                               th:href="@{'/courses/' + ${course.slug} + '/learn/' + ${previous.id}}" 
+                               class="btn btn-outline-secondary fw-bold px-4">
+                                <i class="fas fa-chevron-left me-2"></i> Anterior
+                            </a>
+                            <button th:if="${previous == null}" class="btn btn-outline-secondary px-4" disabled>
+                                <i class="fas fa-chevron-left me-2"></i> Anterior
+                            </button>
+                        </div>
+
+                        <div>
+                            <a th:if="${next != null}" 
+                               th:href="@{'/courses/' + ${course.slug} + '/learn/' + ${next.id}}" 
+                               class="btn btn-primary fw-bold px-4">
+                                Siguiente <i class="fas fa-chevron-right ms-2"></i>
+                            </a>
+                            <button th:if="${next == null}" class="btn btn-secondary px-4" disabled>
+                                Siguiente <i class="fas fa-chevron-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+                
+                <div class="card shadow-sm border-0 sticky-top" style="top: 6rem; z-index: 1;">
+                    
+                    <div class="card-body sidebar-content">
+                        
+                        <div class="d-flex align-items-start mb-4">
+                            <img th:src="${course.image}" class="rounded me-3 shadow-sm" width="80" height="50" style="object-fit: cover;">
+                            <div>
+                                <h2 class="h6 fw-bold mb-1" th:text="${course.name}">Curso</h2>
+                                <a th:href="@{'/courses/' + ${course.slug}}" class="text-primary small text-decoration-none fw-bold">
+                                    <i class="fas fa-external-link-alt me-1"></i> Ir al detalle
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center mb-4 p-3 bg-light rounded border">
+                            <div class="bg-primary text-white d-flex align-items-center justify-content-center rounded-circle me-3 fw-bold" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                                <span th:text="${#strings.substring(user.name, 0, 1)}">U</span>
+                            </div>
+                            <div class="overflow-hidden">
+                                <p class="mb-0 fw-bold text-truncate" th:text="${user.name}">Usuario</p>
+                                <p class="mb-0 text-muted small text-truncate" th:text="${user.email}">email</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between small mb-1 fw-bold">
+                                <span class="text-muted">Progreso del curso</span>
+                                <span class="text-primary" th:text="${progress + '%'}">0%</span>
+                            </div>
+                            <div class="progress" style="height: 10px; border-radius: 10px;">
+                                <div class="progress-bar bg-primary" role="progressbar" 
+                                     th:style="'width: ' + ${progress} + '%'" 
+                                     th:aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+
+                        <div class="accordion accordion-flush border rounded" id="accordionSyllabus">
+                            <div class="accordion-item" th:each="module : ${course.modules}">
+                                
+                                <h2 class="accordion-header" th:id="'heading-' + ${module.id}">
+                                    <button class="accordion-button py-3 bg-light" type="button" 
+                                            data-bs-toggle="collapse" 
+                                            th:data-bs-target="'#collapse-' + ${module.id}" 
+                                            th:classappend="${module.lessons.contains(currentLesson)} ? '' : 'collapsed'"
+                                            th:aria-expanded="${module.lessons.contains(currentLesson)} ? 'true' : 'false'"
+                                            th:aria-controls="'collapse-' + ${module.id}">
+                                        <span class="fw-bold text-dark small text-uppercase" th:text="${module.name}">Módulo</span>
+                                    </button>
+                                </h2>
+
+                                <div th:id="'collapse-' + ${module.id}" 
+                                     class="accordion-collapse collapse" 
+                                     th:classappend="${module.lessons.contains(currentLesson)} ? 'show' : ''"
+                                     th:aria-labelledby="'heading-' + ${module.id}" 
+                                     data-bs-parent="#accordionSyllabus">
+                                    
+                                    <div class="accordion-body p-0">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item list-group-item-action p-0"
+                                                th:each="lesson : ${module.lessons}">
+                                                
+                                                <a th:href="@{'/courses/' + ${course.slug} + '/learn/' + ${lesson.id}}" 
+                                                   class="d-flex align-items-center text-decoration-none w-100 py-3 px-3"
+                                                   th:classappend="${lesson.id == currentLesson.id} ? 'bg-primary-subtle border-start border-4 border-primary' : ''">
+                                                    
+                                                    <div class="me-3" style="width: 20px; text-align: center;">
+                                                        
+                                                        <i th:if="${lesson.id == currentLesson.id}" 
+                                                           class="fas fa-dot-circle text-primary fs-5"></i>
+
+                                                        <i th:if="${lesson.id != currentLesson.id and user.hasCompleted(lesson)}" 
+                                                           class="fas fa-check-circle text-yellow fs-5"></i>
+
+                                                        <i th:if="${lesson.id != currentLesson.id and !user.hasCompleted(lesson)}" 
+                                                           class="fas fa-circle text-gray fs-5" style="opacity: 0.5;"></i>
+                                                    </div>
+
+                                                    <div class="flex-grow-1">
+                                                        <span class="d-block small fw-semibold text-dark" th:text="${lesson.name}">Nombre</span>
+                                                        <span class="d-block x-small text-muted" style="font-size: 0.75rem;" 
+                                                              th:text="${(lesson.duration / 60) + ':' + #numbers.formatInteger(lesson.duration % 60, 2) + ' min'}">00:00</span>
+                                                    </div>
+                                                </a>
+
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div layout:fragment="js">
+        <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const player = new Plyr('#player');
+            });
+        </script>
+    </div>
+
+</body>
+</html>

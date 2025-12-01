@@ -2,7 +2,6 @@ package com.example.codersfree.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore; 
@@ -25,10 +24,10 @@ public class Lesson {
     @Column(nullable = false, length = 255)
     private String name;
 
-    @Column(name = "video_path", length = 255) // Ruta del archivo de video
+    @Column(name = "video_path", length = 255)
     private String videoPath;
 
-    @Column(name = "image_path", length = 255) // Ruta de la miniatura (thumbnail)
+    @Column(name = "image_path", length = 255)
     private String imagePath; 
 
     @Lob
@@ -39,10 +38,7 @@ public class Lesson {
     private Integer position;
 
     @Column(nullable = false)
-    private Integer duration;
-
-    // ELIMINADO: private Boolean isPublish; 
-    // ELIMINADO: private Boolean isPreview;
+    private Integer duration; // En segundos
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

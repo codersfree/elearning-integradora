@@ -79,9 +79,12 @@ public class Course {
     @JoinColumn(name = "price_id", referencedColumnName = "id", nullable = false)
     private Price price;
 
-    // --- Relaciones OneToMany CORREGIDAS ---
+    // --- Relaciones OneToMany ---
+
     @Builder.Default
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    // --- CORRECCIÓN AQUÍ: Ordenar módulos por ID ---
+    @OrderBy("id ASC") 
     private Set<Module> modules = new HashSet<>();
 
     @Builder.Default

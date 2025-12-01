@@ -7,7 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore; 
 
 import java.time.LocalDateTime;
-import java.util.ArrayList; // Usar List
+import java.util.ArrayList; 
 import java.util.List;
 
 @Entity
@@ -42,7 +42,6 @@ public class Module {
     @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
     private Course course;
 
-    // Cambiado a List y ordenado por 'position' para garantizar el orden de las lecciones
     @Builder.Default
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("position ASC")
