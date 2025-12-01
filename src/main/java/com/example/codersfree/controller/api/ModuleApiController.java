@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/courses")
-public class SectionApiController {
+public class ModuleApiController {
 
     @Autowired
     private CourseRepository courseRepository;

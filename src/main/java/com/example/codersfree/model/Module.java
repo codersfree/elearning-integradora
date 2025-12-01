@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import com.fasterxml.jackson.annotation.JsonIgnore; // <--- IMPORTANTE
+import com.fasterxml.jackson.annotation.JsonIgnore; 
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -37,8 +37,7 @@ public class Module {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // --- AQUÍ ESTÁ EL CAMBIO ---
-    @JsonIgnore // <--- ESTO EVITA EL ERROR DE BYTEBUDDY
+    @JsonIgnore // Rompe el ciclo Course -> Module -> Course
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
     private Course course;

@@ -25,6 +25,5 @@ public class UserDto {
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres.")
     private String password;
     
-    // Campo para recibir los IDs de los roles seleccionados
     private Set<Long> roles = new HashSet<>(); 
 }

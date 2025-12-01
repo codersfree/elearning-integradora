@@ -1,107 +1,111 @@
 import { template } from './CurriculumManager.template.js';
 import api from '../../utils/apiUtils.js';
 import { alertStore } from '../../store/alertStore.js';
+
+// --- Importación de Componentes Anidados (Ajusta según tu proyecto) ---
 import SectionForm from './SectionForm.js';
+import LessonForm from './LessonForm.js';
+import LessonItem from './LessonItem.js'; 
 import AlertMessage from '../common/AlertMessage.js';
 
 export default {
     template: template,
     props: ['slug'],
-    
     components: {
+        'section-form': SectionForm,
+        'lesson-form': LessonForm,
+        'lesson-item': LessonItem, 
         'alert-message': AlertMessage,
-        'section-form': SectionForm
     },
-    
     data() {
         return {
-            sections: [],
-            isLoading: true,
-            isDeleting: {},     // Para spinners de eliminar
-            isUpdating: false,  // Para spinner de actualizar
+            sections: [], // Almacena toda la estructura del currículo
+            isLoading: false,
+            showAddForm: false, // Formulario para añadir sección
+            showAddLessonForm: {}, // Formulario para añadir lección por módulo
             
-            // Estado para Edición Individual
+            // Estado para edición de sección
             editingId: null,
             editingName: '',
-
-            // Estado para Agregar
-            showAddForm: false
+            isUpdating: false,
+            isDeleting: {},
         };
     },
-    
+    mounted() {
+        this.fetchCurriculum();
+    },
     methods: {
-        async fetchSections() {
+        async fetchCurriculum() {
             this.isLoading = true;
             try {
-                this.sections = await api.get(`/api/courses/${this.slug}/sections`);
-            } catch (err) {
-                alertStore.showMessage(err.message || 'Error al cargar secciones', 'danger');
+                // Endpoint: /api/courses/{slug}/sections
+                const data = await api.get(`/api/courses/${this.slug}/sections`);
+                this.sections = data;
+            } catch (error) {
+                alertStore.showMessage('Error al cargar el currículo.', 'danger');
+                console.error('Error fetching curriculum:', error);
             } finally {
                 this.isLoading = false;
             }
         },
-
-        // --- Lógica de Edición Individual ---
-
-        startEditing(section) {
-            this.editingId = section.id;
-            this.editingName = section.name;
+        
+        // --- Manejo de Lecciones ---
+        startAddingLesson(moduleId) {
+            this.showAddLessonForm = { [moduleId]: true };
         },
 
-        cancelEditing() {
-            this.editingId = null;
-            this.editingName = '';
+        cancelAddingLesson(moduleId) {
+            this.showAddLessonForm = { [moduleId]: false };
         },
 
-        async updateSection(section) {
-            if (!this.editingName.trim()) return;
-
-            this.isUpdating = true;
-            try {
-                // Actualizamos solo esta sección
-                await api.put(`/api/courses/${this.slug}/sections/${section.id}`, {
-                    name: this.editingName,
-                    sortOrder: section.sortOrder
+        handleLessonAdded(newLesson, moduleId) {
+            const moduleIndex = this.sections.findIndex(s => s.id === moduleId);
+            if (moduleIndex !== -1) {
+                if (!this.sections[moduleIndex].lessons) {
+                    this.sections[moduleIndex].lessons = [];
+                }
+                this.sections[moduleIndex].lessons.push(newLesson);
+            }
+            this.cancelAddingLesson(moduleId);
+        },
+        
+        /**
+         * Maneja la eliminación de una lección, removiéndola del estado `sections`.
+         * @param {number} lessonId - El ID de la lección eliminada.
+         * @param {number} moduleId - El ID del módulo padre.
+         */
+        handleLessonDeleted(lessonId, moduleId) {
+            // 1. Encontrar el índice del módulo padre
+            const moduleIndex = this.sections.findIndex(s => s.id === moduleId);
+            
+            if (moduleIndex !== -1) {
+                const module = this.sections[moduleIndex];
+                
+                // 2. Filtrar la lección de la lista de lecciones del módulo
+                module.lessons = module.lessons.filter(l => l.id !== lessonId);
+                
+                // 3. Recalcular los índices de posición (opcional pero recomendado)
+                module.lessons.forEach((lesson, index) => {
+                    lesson.position = index + 1;
                 });
-
-                // Actualizamos la lista local
-                section.name = this.editingName;
-                this.cancelEditing();
-                alertStore.showMessage('Sección actualizada correctamente.', 'success');
-            } catch (err) {
-                console.error(err);
-                alertStore.showMessage('Error al actualizar sección.', 'danger');
-            } finally {
-                this.isUpdating = false;
             }
         },
 
-        // --- Lógica de Eliminación ---
-
-        async handleSectionDelete(section) {
-            if(!confirm('¿Estás seguro de eliminar la sección "' + section.name + '" y todas sus lecciones?')) return;
-
-            this.isDeleting[section.id] = true;
-            try {
-                await api.del(`/api/courses/${this.slug}/sections/${section.id}`);
-                this.sections = this.sections.filter(s => s.id !== section.id);
-                alertStore.showMessage('Sección eliminada.', 'success');
-            } catch (err) {
-                alertStore.showMessage(err.message || 'Error al eliminar', 'danger');
-            } finally {
-                delete this.isDeleting[section.id];
-            }
+        // --- Manejo de Secciones (Añadir) ---
+        showAddSectionForm() {
+            this.showAddForm = true;
         },
 
-        // --- Lógica de Agregar ---
-
+        cancelAddSection() {
+            this.showAddForm = false;
+        },
+        
         handleSectionAdded(newSection) {
             this.sections.push(newSection);
-            this.showAddForm = false; // Ocultamos el formulario tras agregar
-        }
-    },
-    
-    mounted() {
-        this.fetchSections();
-    },
+            this.showAddForm = false;
+            alertStore.showMessage(`Sección "${newSection.name}" creada.`, 'success');
+        },
+
+        // ... Otros métodos de manejo de secciones (update, delete) irían aquí.
+    }
 };

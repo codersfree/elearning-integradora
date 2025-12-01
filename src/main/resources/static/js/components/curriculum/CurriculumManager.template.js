@@ -1,13 +1,13 @@
 export const template = /* html */ `
 <div class="container-fluid p-0">
     
-    <!-- Header -->
-    <div class="mb-4">
-        <h2 class="h4 fw-bold text-dark">Lecciones del curso</h2>
+    <alert-message></alert-message>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Administrador del Currículo</h2>
     </div>
 
-    <!-- Spinner General -->
-    <div v-if="isLoading" class="d-flex justify-content-center my-5">
+    <div v-if="isLoading" class="text-center p-5">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Cargando...</span>
         </div>
@@ -15,87 +15,58 @@ export const template = /* html */ `
 
     <div v-else>
         
-        <!-- LISTA DE SECCIONES -->
-        <div v-for="(section, index) in sections" :key="section.id" class="mb-3">
+        <div v-for="(section, index) in sections" :key="section.id" class="mb-4 border rounded shadow-sm"> 
             
-            <!-- MODO VISUALIZACIÓN -->
-            <div v-if="editingId !== section.id" 
-                 class="d-flex align-items-center justify-content-between p-3 bg-light rounded border border-0 shadow-sm">
-                
-                <div class="d-flex align-items-center flex-grow-1">
-                    <!-- Botón de Orden (Drag Handle) -->
-                    <div class="text-secondary me-3" style="cursor: grab;" title="Arrastrar para ordenar">
-                        <i class="fas fa-grip-vertical fa-lg"></i>
-                    </div>
-
-                    <!-- Texto de la Sección -->
-                    <div>
-                        <span class="fw-bold text-secondary me-1">Sección {{ index + 1 }}:</span>
-                        <span class="fw-bold text-dark">{{ section.name }}</span>
-                    </div>
+            <div class="p-3 bg-light d-flex justify-content-between align-items-center border-bottom">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-bars text-secondary me-3" style="cursor: grab;"></i>
+                    <h5 class="mb-0 fw-bold">{{ section.name }}</h5>
                 </div>
-
-                <!-- Botones de Acción (Editar / Eliminar) -->
-                <div class="d-flex gap-2">
-                    <button class="btn btn-link text-secondary p-0" @click="startEditing(section)" title="Editar">
-                        <i class="fas fa-pencil-alt"></i>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary me-2" @click="startAddingLesson(section.id)">
+                        <i class="fas fa-plus me-1"></i> Añadir Clase
                     </button>
-                    
-                    <button class="btn btn-link text-secondary p-0" @click="handleSectionDelete(section)" 
-                            :disabled="isDeleting[section.id]" title="Eliminar">
-                        <i v-if="!isDeleting[section.id]" class="fas fa-trash-alt"></i>
-                        <span v-else class="spinner-border spinner-border-sm" role="status"></span>
-                    </button>
-                </div>
+                    </div>
             </div>
-
-            <!-- MODO EDICIÓN (Replica tu captura image_ce2586.png) -->
-            <div v-else class="p-4 bg-light rounded border border-0 shadow-sm">
-                <div class="d-flex align-items-center mb-3">
-                    <span class="fw-bold text-secondary me-3 text-nowrap">Sección {{ index + 1 }}:</span>
-                    <input type="text" 
-                           class="form-control bg-white" 
-                           v-model="editingName" 
-                           @keyup.enter="updateSection(section)"
-                           ref="editInput"
-                           autoFocus>
+            
+            <div class="p-3"> 
+                
+                <div v-if="section.lessons && section.lessons.length > 0">
+                    <lesson-item
+                        v-for="(lesson, lessonIndex) in section.lessons"
+                        :key="lesson.id"
+                        :lesson="lesson"
+                        :lesson-index="lessonIndex"
+                        :module-id="section.id"  @lesson-deleted="handleLessonDeleted"
+                    ></lesson-item>
+                </div>
+                <div v-else class="text-center text-secondary py-3">
+                    Aún no hay clases en esta sección.
                 </div>
                 
-                <div class="d-flex justify-content-end gap-2">
-                    <button class="btn btn-danger text-white fw-bold btn-sm px-3" 
-                            @click="cancelEditing">
-                        Cancelar
-                    </button>
-                    <button class="btn btn-dark fw-bold btn-sm px-3" 
-                            @click="updateSection(section)"
-                            :disabled="!editingName.trim() || isUpdating">
-                        <span v-if="isUpdating" class="spinner-border spinner-border-sm me-1"></span>
-                        Actualizar
-                    </button>
-                </div>
+                <lesson-form
+                    v-if="showAddLessonForm[section.id]"
+                    :module-id="section.id"
+                    :lessons-count="section.lessons ? section.lessons.length : 0"
+                    @lesson-added="handleLessonAdded($event, section.id)"
+                    @cancel="cancelAddingLesson(section.id)"
+                ></lesson-form>
             </div>
 
+        </div> 
+        
+        <div class="text-center my-4">
+            <button v-if="!showAddForm" class="btn btn-outline-secondary" @click="showAddSectionForm">
+                <i class="fas fa-folder-plus me-1"></i> Añadir Módulo/Sección
+            </button>
         </div>
 
-        <!-- Botón para mostrar formulario de Agregar (El "+" flotante) -->
-        <div v-if="!showAddForm" class="mt-3">
-             <button class="btn btn-light text-primary fw-bold shadow-sm px-3" 
-                     @click="showAddForm = true">
-                <i class="fas fa-plus"></i>
-             </button>
-        </div>
-
-        <!-- FORMULARIO NUEVA SECCIÓN (Al final) -->
-        <div v-if="showAddForm" class="mt-4">
-            <section-form 
-                :slug="slug" 
-                :next-order="sections.length + 1"
-                @section-added="handleSectionAdded"
-                @cancel="showAddForm = false"
-            ></section-form>
-        </div>
-
-        <alert-message class="mt-3"></alert-message>
+        <section-form
+            v-if="showAddForm"
+            :course-slug="slug"
+            @section-added="handleSectionAdded"
+            @cancel="cancelAddSection"
+        ></section-form>
     </div>
 </div>
 `;

@@ -5,6 +5,7 @@ import lombok.*;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore; 
 
 import java.time.LocalDateTime;
 
@@ -21,13 +22,13 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 45)
+    @Column(nullable = false, length = 255)
     private String name;
 
-    @Column(name = "video_path", length = 45)
+    @Column(name = "video_path", length = 255) // CORREGIDO: Aumentado el tamaño del path
     private String videoPath;
 
-    @Column(name = "image_path", length = 45)
+    @Column(name = "image_path", length = 255)
     private String imagePath;
 
     @Lob
@@ -51,7 +52,8 @@ public class Lesson {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // --- Relación ---
+    // Rompe el ciclo Lesson -> Module -> Lesson
+    @JsonIgnore 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id", referencedColumnName = "id", nullable = false)
     private Module module;
