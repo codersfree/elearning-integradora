@@ -127,7 +127,7 @@
 
                 </table>
 
-                <div th:replace="~{fragments/pagination :: paginador(pagina=${covers})}"></div>
+                <div th:replace="~{fragments/pagination :: pagination(page=${covers}, baseUrl='/admin/covers')}"></div>
 
             </div>
         </div>

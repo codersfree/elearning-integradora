@@ -39,9 +39,9 @@ public class CoverService {
     }
 
     @Transactional(readOnly = true)
-    public PageWrapper<Cover> findPaginate(Pageable pageable) {
+    public Page<Cover> findPaginate(Pageable pageable) {
         Page<Cover> covers = coverRepository.findAll(pageable);
-        return new PageWrapper<>(covers);
+        return covers;
     }
 
     public List<Cover> getActiveCoversForToday() {
