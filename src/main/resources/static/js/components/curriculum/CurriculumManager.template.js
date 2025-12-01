@@ -26,7 +26,7 @@ export const template = /* html */ `
                     <button class="btn btn-sm btn-outline-primary me-2" @click="startAddingLesson(section.id)">
                         <i class="fas fa-plus me-1"></i> Añadir Clase
                     </button>
-                    </div>
+                </div>
             </div>
             
             <div class="p-3"> 
@@ -37,7 +37,8 @@ export const template = /* html */ `
                         :key="lesson.id"
                         :lesson="lesson"
                         :lesson-index="lessonIndex"
-                        :module-id="section.id"  @lesson-deleted="handleLessonDeleted"
+                        :module-id="section.id" 
+                        @lesson-deleted="handleLessonDeleted"  
                     ></lesson-item>
                 </div>
                 <div v-else class="text-center text-secondary py-3">
@@ -63,7 +64,7 @@ export const template = /* html */ `
 
         <section-form
             v-if="showAddForm"
-            :course-slug="slug"
+            :slug="slug"  :next-order="sections.length + 1"
             @section-added="handleSectionAdded"
             @cancel="cancelAddSection"
         ></section-form>

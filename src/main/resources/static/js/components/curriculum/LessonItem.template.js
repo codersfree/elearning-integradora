@@ -55,27 +55,17 @@ export const template = /* html */ `
         
         <div v-if="hasVideo && !isEditingContent" class="mt-4">
             
-            <div class="mb-3 d-flex gap-3">
-                
-                <button v-if="!showDescriptionForm" 
-                        class="btn btn-link text-primary fw-bold p-0" 
-                        @click.prevent="toggleDescriptionForm">
-                    + Descripción
-                </button>
-                
-                <button class="btn btn-link text-primary fw-bold p-0" @click.prevent="showResourcesForm = !showResourcesForm">
-                    + Recursos
-                </button>
-                <button class="btn btn-link text-primary fw-bold p-0" @click.prevent="handleToggle('lab', 'open')">+ Laboratorio</button>
-            </div>
-
             <lesson-description-form
-                v-if="showDescriptionForm"
                 :lesson="localLesson"
                 :module-id="moduleId" 
                 @description-updated="handleDescriptionUpdated"
-                @cancel="toggleDescriptionForm"
+                class="mb-3"
             ></lesson-description-form>
+
+            <div class="mb-3 d-flex gap-3">
+                <button class="btn btn-link text-primary fw-bold p-0" @click.prevent="showResourcesForm = !showResourcesForm">+ Recursos</button>
+                <button class="btn btn-link text-primary fw-bold p-0" @click.prevent="showResourcesForm = !showResourcesForm">+ Laboratorio</button>
+            </div>
             
             <div v-if="showResourcesForm" class="border rounded p-3 mb-3 bg-white">
                 <h6>Formulario de Recursos</h6>

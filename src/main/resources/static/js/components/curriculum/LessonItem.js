@@ -9,7 +9,7 @@ export default {
     props: ['lesson', 'lessonIndex', 'moduleId'],
     components: {
         'lesson-video-form': LessonVideoForm,
-        'lesson-description-form': LessonDescriptionForm 
+        'lesson-description-form': LessonDescriptionForm
     },
     emits: ['lesson-deleted', 'lesson-updated'], 
     data() {
@@ -20,8 +20,7 @@ export default {
             isDeleting: false,
             isEditingContent: false, 
             
-            showDescriptionForm: false, 
-            showResourcesForm: false,
+            showResourcesForm: false, // Controla la visibilidad del formulario de Recursos
         };
     },
     methods: {
@@ -29,20 +28,14 @@ export default {
             this.isExpanded = !this.isExpanded;
         },
         handleVideoUpdated(updatedLesson) {
-            Object.assign(this.localLesson, updatedLesson);
+            this.localLesson = { ...this.localLesson, ...updatedLesson };
             this.isEditingContent = false; 
         },
         
-        // --- MANEJO DE DESCRIPCIÓN ---
-        toggleDescriptionForm() {
-            this.showDescriptionForm = !this.showDescriptionForm;
-            this.showResourcesForm = false;
-        },
-
+        // --- MANEJO DE DESCRIPCIÓN (Solo actualiza el estado local) ---
         handleDescriptionUpdated(newDescription) {
-            // Actualiza el estado local y cierra el formulario
+            // Actualiza el estado local del padre cuando el componente hijo (DescriptionForm) guarda exitosamente
             this.localLesson.description = newDescription;
-            this.showDescriptionForm = false;
         },
         
         // --- Lógica de Edición de Video/Contenido ---
@@ -53,7 +46,7 @@ export default {
             this.isEditingContent = false;
         },
         
-        // --- Lógica de Edición de Nombre y Persistencia (PUT) ---
+        // --- Lógica de Edición de Nombre y Persistencia ---
         startEditName() {
             this.isEditingName = true;
         },
@@ -73,6 +66,8 @@ export default {
                     name: this.localLesson.name,
                     description: this.localLesson.description,
                     isPreview: this.localLesson.isPreview,
+                    position: this.localLesson.position, 
+                    duration: this.localLesson.duration 
                 };
 
                 await api.put(`/api/modules/${this.moduleId}/lessons/${this.localLesson.id}`, updateDto);
@@ -113,6 +108,9 @@ export default {
     computed: {
         hasVideo() {
             return this.localLesson.videoPath && this.localLesson.videoPath.length > 0;
+        },
+        hasDescription() {
+            return this.localLesson.description && this.localLesson.description.trim().length > 0;
         },
         formattedDuration() {
             if (this.localLesson.duration === 0 || !this.localLesson.duration) return '0:00 min';

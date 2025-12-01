@@ -4,47 +4,57 @@ import api from '../../utils/apiUtils.js';
 
 export default {
     template: template,
-    props: ['lesson', 'moduleId'], // ⬅️ AHORA RECIBE moduleId
-    emits: ['description-updated', 'cancel'],
+    props: ['lesson', 'moduleId'],
+    emits: ['description-updated'], // Ya no emite 'cancel' al padre LessonItem
     data() {
         return {
-            // Inicializa con la descripción actual de la lección
             localDescription: this.lesson.description || '',
             isSaving: false,
+            isEditing: false, // Estado interno para alternar entre texto y textarea
         };
     },
     methods: {
+        startEditing() {
+            this.isEditing = true;
+        },
+
         async saveDescription() {
             this.isSaving = true;
             try {
-                // DTO de actualización: Incluye todos los campos necesarios para JPA
                 const updateDto = {
                     name: this.lesson.name, 
                     description: this.localDescription,
                     isPreview: this.lesson.isPreview,
-                    
-                    // Incluir campos requeridos por el backend (aunque no se editen)
                     position: this.lesson.position, 
                     duration: this.lesson.duration 
                 };
 
-                // CRUCIAL: USAR this.moduleId de la prop para construir la URL
+                // Llama al PUT API usando el moduleId
                 await api.put(`/api/modules/${this.moduleId}/lessons/${this.lesson.id}`, updateDto);
 
                 alertStore.showMessage('Descripción guardada.', 'success');
-                this.$emit('description-updated', this.localDescription);
+                this.$emit('description-updated', this.localDescription); // Informa al padre LessonItem
+                this.isEditing = false; // Cierra el editor
                 
             } catch (error) {
-                alertStore.showMessage(`Error al guardar la descripción: ${error.message}`, 'danger');
+                alertStore.showMessage('Error al guardar la descripción.', 'danger');
                 console.error("Save Description Error:", error);
             } finally {
                 this.isSaving = false;
             }
         },
-        cancel() {
-            // Revierte la descripción local a la original de la prop y cierra el formulario
+        
+        cancelEditing() {
+            // Revierte el texto del textarea al valor original de la prop y cierra el editor
             this.localDescription = this.lesson.description || '';
-            this.$emit('cancel');
+            this.isEditing = false;
         }
     },
+    computed: {
+        hasDescription() {
+            return this.lesson.description && this.lesson.description.trim().length > 0;
+        },
+        // Mantenemos la descripción local para que el textarea funcione
+        // Pero usamos la descripción de la prop para la vista de solo lectura
+    }
 };

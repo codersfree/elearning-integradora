@@ -10,7 +10,7 @@ import AlertMessage from '../common/AlertMessage.js';
 
 export default {
     template: template,
-    props: ['slug'],
+    props: ['slug'], // ⬅️ Recibe el slug del archivo de inicio
     components: {
         'section-form': SectionForm,
         'lesson-form': LessonForm,
@@ -19,10 +19,10 @@ export default {
     },
     data() {
         return {
-            sections: [], // Almacena toda la estructura del currículo
+            sections: [],
             isLoading: false,
-            showAddForm: false, // Formulario para añadir sección
-            showAddLessonForm: {}, // Formulario para añadir lección por módulo
+            showAddForm: false,
+            showAddLessonForm: {}, 
             
             // Estado para edición de sección
             editingId: null,
@@ -38,26 +38,24 @@ export default {
         async fetchCurriculum() {
             this.isLoading = true;
             try {
-                // Endpoint: /api/courses/{slug}/sections
+                // Usa this.slug para la carga inicial
                 const data = await api.get(`/api/courses/${this.slug}/sections`);
                 this.sections = data;
             } catch (error) {
-                alertStore.showMessage('Error al cargar el currículo.', 'danger');
+                alertStore.showMessage('Error al cargar el currículo. ' + error.message, 'danger');
                 console.error('Error fetching curriculum:', error);
             } finally {
                 this.isLoading = false;
             }
         },
         
-        // --- Manejo de Lecciones ---
+        // --- Manejo de Lecciones y Eliminación (Omitidos, ya implementados) ---
         startAddingLesson(moduleId) {
             this.showAddLessonForm = { [moduleId]: true };
         },
-
         cancelAddingLesson(moduleId) {
             this.showAddLessonForm = { [moduleId]: false };
         },
-
         handleLessonAdded(newLesson, moduleId) {
             const moduleIndex = this.sections.findIndex(s => s.id === moduleId);
             if (moduleIndex !== -1) {
@@ -68,30 +66,18 @@ export default {
             }
             this.cancelAddingLesson(moduleId);
         },
-        
-        /**
-         * Maneja la eliminación de una lección, removiéndola del estado `sections`.
-         * @param {number} lessonId - El ID de la lección eliminada.
-         * @param {number} moduleId - El ID del módulo padre.
-         */
         handleLessonDeleted(lessonId, moduleId) {
-            // 1. Encontrar el índice del módulo padre
             const moduleIndex = this.sections.findIndex(s => s.id === moduleId);
-            
             if (moduleIndex !== -1) {
                 const module = this.sections[moduleIndex];
-                
-                // 2. Filtrar la lección de la lista de lecciones del módulo
                 module.lessons = module.lessons.filter(l => l.id !== lessonId);
-                
-                // 3. Recalcular los índices de posición (opcional pero recomendado)
                 module.lessons.forEach((lesson, index) => {
                     lesson.position = index + 1;
                 });
             }
         },
 
-        // --- Manejo de Secciones (Añadir) ---
+        // --- Manejo de Secciones ---
         showAddSectionForm() {
             this.showAddForm = true;
         },
@@ -105,7 +91,5 @@ export default {
             this.showAddForm = false;
             alertStore.showMessage(`Sección "${newSection.name}" creada.`, 'success');
         },
-
-        // ... Otros métodos de manejo de secciones (update, delete) irían aquí.
     }
 };
