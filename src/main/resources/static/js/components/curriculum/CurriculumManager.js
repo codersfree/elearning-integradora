@@ -10,7 +10,7 @@ import AlertMessage from '../common/AlertMessage.js';
 
 export default {
     template: template,
-    props: ['slug'], // ⬅️ Recibe el slug del archivo de inicio
+    props: ['slug'],
     components: {
         'section-form': SectionForm,
         'lesson-form': LessonForm,
@@ -24,11 +24,11 @@ export default {
             showAddForm: false,
             showAddLessonForm: {}, 
             
-            // Estado para edición de sección
+            // ESTADOS DE EDICIÓN DE SECCIÓN REQUERIDOS POR EL TEMPLATE
             editingId: null,
             editingName: '',
             isUpdating: false,
-            isDeleting: {},
+            isDeleting: {}, // Usado para spinners de eliminación
         };
     },
     mounted() {
@@ -38,7 +38,6 @@ export default {
         async fetchCurriculum() {
             this.isLoading = true;
             try {
-                // Usa this.slug para la carga inicial
                 const data = await api.get(`/api/courses/${this.slug}/sections`);
                 this.sections = data;
             } catch (error) {
@@ -49,7 +48,7 @@ export default {
             }
         },
         
-        // --- Manejo de Lecciones y Eliminación (Omitidos, ya implementados) ---
+        // ... (Manejo de Lecciones y Adición/Eliminación de Lecciones - sin cambios) ...
         startAddingLesson(moduleId) {
             this.showAddLessonForm = { [moduleId]: true };
         },
@@ -77,7 +76,8 @@ export default {
             }
         },
 
-        // --- Manejo de Secciones ---
+        // --- MANEJO DE SECCIONES (CRUD RESTAURADO) ---
+
         showAddSectionForm() {
             this.showAddForm = true;
         },
@@ -90,6 +90,61 @@ export default {
             this.sections.push(newSection);
             this.showAddForm = false;
             alertStore.showMessage(`Sección "${newSection.name}" creada.`, 'success');
+        },
+
+        // 🚨 MÉTODO 1: INICIAR EDICIÓN INLINE
+        startEditing(section) {
+            this.editingId = section.id;
+            this.editingName = section.name;
+        },
+
+        // 🚨 MÉTODO 2: CANCELAR EDICIÓN
+        cancelEditing() {
+            this.editingId = null;
+            this.editingName = '';
+        },
+
+        // 🚨 MÉTODO 3: ACTUALIZAR SECCIÓN (PUT)
+        async updateSection(section) {
+            if (!this.editingName.trim()) return;
+
+            this.isUpdating = true;
+            try {
+                // Endpoint: PUT /api/courses/{slug}/sections/{moduleId}
+                await api.put(`/api/courses/${this.slug}/sections/${section.id}`, {
+                    name: this.editingName,
+                    sortOrder: section.sortOrder 
+                });
+
+                // Actualizar la lista local
+                section.name = this.editingName;
+                this.cancelEditing();
+                alertStore.showMessage('Sección actualizada correctamente.', 'success');
+            } catch (err) {
+                console.error(err);
+                alertStore.showMessage('Error al actualizar sección.', 'danger');
+            } finally {
+                this.isUpdating = false;
+            }
+        },
+
+        // 🚨 MÉTODO 4: ELIMINAR SECCIÓN (DELETE)
+        async deleteSection(section) {
+            if(!confirm(`¿Estás seguro de eliminar la sección "${section.name}" y todo su contenido?`)) return;
+
+            this.isDeleting[section.id] = true;
+            try {
+                // Endpoint: DELETE /api/courses/{slug}/sections/{moduleId}
+                await api.del(`/api/courses/${this.slug}/sections/${section.id}`);
+                
+                // Remover de la lista local
+                this.sections = this.sections.filter(s => s.id !== section.id);
+                alertStore.showMessage('Sección eliminada.', 'success');
+            } catch (err) {
+                alertStore.showMessage(err.message || 'Error al eliminar la sección', 'danger');
+            } finally {
+                delete this.isDeleting[section.id];
+            }
         },
     }
 };
