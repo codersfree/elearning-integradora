@@ -92,9 +92,6 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Goal> goals = new HashSet<>();
 
-    // @OneToMany(mappedBy = "course")
-    // private Set<Enrolled> enrollments = new HashSet<>();
-
     @Transient
     public String getImage() {
         if (imagePath == null || imagePath.isBlank()) {

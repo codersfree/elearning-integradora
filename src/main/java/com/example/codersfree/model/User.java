@@ -48,4 +48,17 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "role_id") // Clave foránea de la otra entidad (Role)
     )
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "course_user", // Tabla intermedia
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    private Set<Course> courses = new HashSet<>();
+
+    // Método helper para agregar curso
+    public void addCourse(Course course) {
+        this.courses.add(course);
+    }
 }

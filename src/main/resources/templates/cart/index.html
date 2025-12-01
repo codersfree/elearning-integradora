@@ -17,9 +17,8 @@
             <a href="/courses" class="btn btn-primary mt-3">Ver cursos</a>
         </div>
 
-
         <div class="row" th:if="${not #lists.isEmpty(items)}">
-
+            
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
@@ -37,19 +36,18 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <a th:href="@{'/courses/' + ${item.slug}}">
-                                                    <img th:src="${item.image}" alt="" class="rounded me-3"
-                                                        style="width: 80px; height: 45px; object-fit: cover;">
+                                                    <img th:src="${item.image}" alt="" class="rounded me-3" style="width: 80px; height: 45px; object-fit: cover;">
                                                 </a>
+                                                
                                                 <div>
                                                     <h6 class="mb-0 fw-bold">
-                                                        <a th:href="@{'/courses/' + ${item.slug}}"
-                                                            th:text="${item.name}"
-                                                            class="text-reset text-decoration-none">
-                                                            Nombre del curso
+                                                        <a th:href="@{'/courses/' + ${item.slug}}" 
+                                                           th:text="${item.name}" 
+                                                           class="text-reset text-decoration-none">
+                                                           Nombre del curso
                                                         </a>
                                                     </h6>
-                                                    <small class="text-muted"
-                                                        th:text="${item.instructor.name}">Instructor</small>
+                                                    <small class="text-muted" th:text="${item.instructor.name}">Instructor</small>
                                                 </div>
                                             </div>
                                         </td>
@@ -75,9 +73,13 @@
                             <span>Total:</span>
                             <span class="fw-bold fs-4" th:text="${total + ' USD'}">0.00 USD</span>
                         </div>
+                        
                         <div class="d-grid">
-                            <button class="btn btn-dark btn-lg">Pagar ahora</button>
+                            <a th:href="@{/checkout}" class="btn btn-dark btn-lg">
+                                Pagar ahora
+                            </a>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -86,5 +88,4 @@
     </main>
 
 </body>
-
 </html>

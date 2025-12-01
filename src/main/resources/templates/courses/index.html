@@ -160,7 +160,7 @@
 
 
                     <!-- Paginación Dinámica -->
-                    <div th:replace="~{fragments/pagination :: paginador(pagina=${courses})}"></div>
+                     <div th:replace="~{fragments/pagination :: pagination(page=${courses}, baseUrl='/courses')}"></div>
 
                 </div>
             </div>

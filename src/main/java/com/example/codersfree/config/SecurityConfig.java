@@ -36,11 +36,11 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         // Rutas protegidas
-                        .requestMatchers("/instructor/**", "/admin/**").authenticated()
+                        .requestMatchers("/instructor/**", "/admin/**", "/checkout/**").authenticated()
                         // Todo lo demás permitido
                         .anyRequest().permitAll())
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**"))
+                        .ignoringRequestMatchers("/api/**", "/checkout/process"))
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/", false)

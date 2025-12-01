@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.codersfree.model.Course;
+import com.example.codersfree.model.User;
 import com.example.codersfree.service.CartService;
 import com.example.codersfree.service.CategoryService;
 import com.example.codersfree.service.CourseService;
 import com.example.codersfree.service.LevelService;
 import com.example.codersfree.service.PriceService;
+import com.example.codersfree.service.UserService;
 
 @Controller
 @RequestMapping("/courses")
@@ -38,6 +40,9 @@ public class CourseController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public String index(
@@ -91,14 +96,40 @@ public class CourseController {
     }
 
     @GetMapping("/{slug}")
-    public String show(@PathVariable String slug, Model model) {
+    public String show(
+        @PathVariable String slug, 
+        Model model, 
+        java.security.Principal principal) {
         
         Course course = courseService.findBySlug(slug);
         model.addAttribute("course", course);
 
         model.addAttribute("isInCart", cartService.contains(course.getId()));
         
+        boolean isEnrolled = false;
+
+        if (principal != null) {
+            User user = userService.findByEmail(principal.getName());
+            isEnrolled = user.getCourses().stream()
+                    .anyMatch(c -> c.getId().equals(course.getId()));
+        }
+
+        model.addAttribute("isEnrolled", isEnrolled);
+
         return "courses/show";
+    }
+
+    @GetMapping("/my-courses")
+    public String myCourses(Model model, java.security.Principal principal) {
+        // 1. Obtener usuario actual
+        User user = userService.findByEmail(principal.getName());
+        
+        // 2. Obtener sus cursos
+        List<Course> enrolledCourses = courseService.findEnrolledCourses(user.getId());
+        
+        model.addAttribute("courses", enrolledCourses);
+        
+        return "courses/my-courses";
     }
 
 }

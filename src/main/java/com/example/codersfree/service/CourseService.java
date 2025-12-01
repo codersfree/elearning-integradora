@@ -86,7 +86,7 @@ public class CourseService {
     }
 
     //Filtro de cursos
-    public PageWrapper<Course> searchAndFilterCourses(
+    public Page<Course> searchAndFilterCourses(
             String searchTerm,
             List<Long> categoryIds,
             List<Long> levelIds,
@@ -113,7 +113,7 @@ public class CourseService {
 
         Page<Course> courses = courseRepository.findAll(spec, pageable);
 
-        return new PageWrapper<>(courses);
+        return courses;
 
         /* return courseRepository.findAll(spec, pageable); */
     }
@@ -215,6 +215,10 @@ public class CourseService {
         course.setGoodbyeMessage(dto.getGoodbyeMessage());
 
         return courseRepository.save(course);
+    }
+
+    public List<Course> findEnrolledCourses(Long userId) {
+        return courseRepository.findByStudentId(userId);
     }
 
 }
