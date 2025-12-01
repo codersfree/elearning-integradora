@@ -1,9 +1,7 @@
 <aside th:fragment="sidebar" class="main-sidebar sidebar-dark-danger elevation-4">
     <!-- Brand Logo -->
-    <a th:href="@{/}"
-        class="brand-link bg-white">
-        <img src="/img/logo-cuadrado.png" alt="AdminLTE Logo" class="brand-image"
-            style="opacity: .8">
+    <a th:href="@{/}" class="brand-link bg-white">
+        <img src="/img/logo-cuadrado.png" alt="AdminLTE Logo" class="brand-image" style="opacity: .8">
         <span class="brand-text font-weight-light">Coders Free</span>
     </a>
 
@@ -40,8 +38,7 @@
                with font-awesome or any other icon font library -->
                 <!-- <li class="nav-header">EXAMPLES</li> -->
                 <li class="nav-item">
-                    <a th:href="@{/admin}"
-                        th:classappend="${paginaActiva == 'dashboard'} ? 'active' : ''"
+                    <a th:href="@{/admin}" th:classappend="${paginaActiva == 'dashboard'} ? 'active' : ''"
                         class="nav-link">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
@@ -49,10 +46,9 @@
                         </p>
                     </a>
                 </li>
-                
+
                 <li class="nav-item">
-                    <a th:href="@{/admin/covers}"
-                        th:classappend="${paginaActiva == 'covers'} ? 'active' : ''"
+                    <a th:href="@{/admin/covers}" th:classappend="${paginaActiva == 'covers'} ? 'active' : ''"
                         class="nav-link">
                         <i class="nav-icon fas fa-image"></i>
                         <p>
@@ -61,31 +57,48 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a th:href="@{/admin/promotions}"
-                        th:classappend="${paginaActiva == 'promotions'} ? 'active' : ''"
+                <!-- <li class="nav-item">
+                    <a th:href="@{/admin/promotions}" th:classappend="${paginaActiva == 'promotions'} ? 'active' : ''"
                         class="nav-link">
                         <i class="nav-icon fas fa-tags"></i>
                         <p>
                             Promociones
                         </p>
                     </a>
-                </li>
+                </li> -->
 
                 <li class="nav-item">
-                    <a th:href="@{/admin/sales}"
-                        th:classappend="${paginaActiva == 'sales'} ? 'active' : ''"
+                    <a th:href="@{/admin/categories}" th:classappend="${paginaActiva == 'categories'} ? 'active' : ''"
                         class="nav-link">
-                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <i class="nav-icon fas fa-layer-group"></i>
                         <p>
-                            Ventas
+                            Categorías
                         </p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a th:href="@{/admin/roles}"
-                        th:classappend="${paginaActiva == 'roles'} ? 'active' : ''"
+                    <a th:href="@{/admin/levels}" th:classappend="${paginaActiva == 'levels'} ? 'active' : ''"
+                        class="nav-link">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>
+                            Niveles
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/admin/prices}" th:classappend="${paginaActiva == 'prices'} ? 'active' : ''"
+                        class="nav-link">
+                        <i class="nav-icon fas fa-tags"></i>
+                        <p>
+                            Precios
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/admin/roles}" th:classappend="${paginaActiva == 'roles'} ? 'active' : ''"
                         class="nav-link">
                         <i class="nav-icon fas fa-user-tag"></i>
                         <p>
@@ -95,8 +108,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a th:href="@{/admin/users}"
-                        th:classappend="${paginaActiva == 'users'} ? 'active' : ''"
+                    <a th:href="@{/admin/users}" th:classappend="${paginaActiva == 'users'} ? 'active' : ''"
                         class="nav-link">
                         <i class="nav-icon fas fa-users"></i>
                         <p>

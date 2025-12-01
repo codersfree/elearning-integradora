@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/admin}" th:with="paginaActiva='levels'">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Niveles</title>
+</head>
+
+<body>
+
+    <div layout:fragment="header">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Niveles</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a th:href="@{/admin}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Niveles</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-primary" th:href="@{/admin/levels/create}">
+                Nuevo Nivel
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 100px;">ID</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col" style="width: 160px; text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody th:if="${!levels.content.isEmpty()}">
+                        <tr th:each="level : ${levels.content}">
+                            <th scope="row" th:text="${level.id}">1</th>
+                            <td th:text="${level.name}">Nombre Nivel</td>
+                            <td style="text-align: right;">
+                                <a th:href="@{/admin/levels/{id}/edit(id=${level.id})}" class="btn btn-primary btn-sm"
+                                    style="margin-right: 5px;">Editar</a>
+                                <form th:action="@{/admin/levels/{id}/delete(id=${level.id})}" method="post"
+                                    style="display: inline;" class="form-delete">
+                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <tbody th:if="${levels.content.isEmpty()}">
+                        <tr>
+                            <td colspan="3" class="text-center">No hay niveles registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div th:replace="~{fragments/pagination :: pagination(page=${levels}, baseUrl='/admin/levels')}"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

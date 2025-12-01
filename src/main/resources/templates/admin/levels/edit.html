@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/admin}" th:with="paginaActiva='levels'">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Editar Nivel</title>
+</head>
+
+<body>
+
+    <div layout:fragment="header">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Niveles</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a th:href="@{/admin}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/levels}">Niveles</a></li>
+                    <li class="breadcrumb-item active">Editar Nivel</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div layout:fragment="content">
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/admin/levels/{id}/edit(id=${level.id})}" th:object="${levelDto}" method="post">
+                    <div class="mb-2">
+                        <label class="form-label">Nombre del Nivel</label>
+                        <input type="text" th:field="*{name}"
+                            class="form-control form-control-lg rounded-3" 
+                            placeholder="Ej. Básico, Intermedio..." required>
+                        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small mt-1"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Actualizar Nivel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
