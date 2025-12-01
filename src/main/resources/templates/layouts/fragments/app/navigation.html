@@ -1,44 +1,41 @@
-<nav th:fragment="navigation" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+<nav th:fragment="navigation" 
+     xmlns:th="http://www.thymeleaf.org" 
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    
     <div class="container-xl">
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand" th:href="@{/}">
             <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/companies/logos/rectangle_logo.png"
-                alt="Coders Free Logo">
+                alt="Coders Free Logo" style="height: 2rem; width: auto;">
         </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/}">
-                        Home
-                    </a>
+                    <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/courses}">
-                        Cursos
-                    </a>
+                    <a class="nav-link active" aria-current="page" th:href="@{/courses}">Cursos</a>
                 </li>
             </ul>
+
             <div class="d-flex align-items-center">
 
                 <a th:href="@{/cart}" class="text-secondary me-4 position-relative">
                     <i class="fa-solid fa-cart-shopping fs-5"></i>
-
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
-                        th:text="${cartCount}">
-                        0
-                        <span class="visually-hidden">items in cart</span>
-                    </span>
+                        th:text="${cartCount}">0</span>
                 </a>
+
                 <div class="d-none d-lg-flex" sec:authorize="!isAuthenticated()">
-                    <a class="btn btn-outline-primary btn-sm me-2" th:href="@{/login}">
-                        Iniciar sesión
-                    </a>
-                    <a class="btn btn-primary btn-sm" th:href="@{/register}">
-                        Registrarse
-                    </a>
+                    <a class="btn btn-outline-primary btn-sm me-2" th:href="@{/login}">Iniciar sesión</a>
+                    <a class="btn btn-primary btn-sm" th:href="@{/register}">Registrarse</a>
                 </div>
 
                 <div class="d-none d-lg-flex" sec:authorize="isAuthenticated()">
@@ -47,22 +44,21 @@
                             aria-expanded="false">
                             <i class="far fa-user-circle fs-4 text-secondary"></i>
                         </button>
+                        
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
-                            <li>
-                                <a class="dropdown-item" th:href="@{/instructor}">
-                                    Instructor
-                                </a>
+                            
+                            <li sec:authorize="hasAuthority('Instructor')">
+                                <a class="dropdown-item" th:href="@{/instructor}">Instructor</a>
                             </li>
-                            <li>
-                                <a class="dropdown-item" th:href="@{/admin}">
-                                    Administrador
-                                </a>
+
+                            <li sec:authorize="hasAuthority('Administrador')">
+                                <a class="dropdown-item" th:href="@{/admin}">Administrador</a>
                             </li>
+
                             <li>
-                                <a class="dropdown-item" th:href="@{/courses/my-courses}">
-                                    Mis Cursos
-                                </a>
+                                <a class="dropdown-item" th:href="@{/courses/my-courses}">Mis Cursos</a>
                             </li>
+                            
                             <li>
                                 <form th:action="@{/logout}" method="post" style="display: inline;">
                                     <button type="submit" class="dropdown-item">

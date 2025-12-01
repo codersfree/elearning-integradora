@@ -1,83 +1,48 @@
-<nav th:fragment="navigation" 
-     xmlns:th="http://www.thymeleaf.org" 
-     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-     class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-    
-    <div class="container-xl">
-        <a class="navbar-brand" th:href="@{/}">
-            <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/companies/logos/rectangle_logo.png"
-                 alt="Coders Free Logo" style="height: 2rem; width: auto;">
+<nav th:fragment="navigation" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+
+        <!-- Logo -->
+        <a class="navbar-brand" href="/">
+            <img style="height: 2rem; width: auto;"
+                 src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/companies/logos/rectangle_logo.png"
+                 alt="Coders Free">
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- Botón Hamburguesa para móvil -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            
+        <!-- Contenido del Menú Colapsable -->
+        <div class="collapse navbar-collapse" id="mainNavbar">
+
+            <!-- Enlaces de Navegación a la Izquierda -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/courses}">Catálogo</a>
-                </li>
-
-                <li class="nav-item" sec:authorize="hasAuthority('Instructor')">
-                    <a class="nav-link text-primary fw-bold" th:href="@{/instructor/courses}">Instructor</a>
-                </li>
-
-                <li class="nav-item" sec:authorize="hasAuthority('Administrador')">
-                    <a class="nav-link text-danger fw-bold" th:href="@{/admin}">Administrador</a>
+                    <a class="nav-link" th:href="@{/instructor}">Cursos</a>
                 </li>
             </ul>
 
+            <!-- Iconos y Menú de Usuario a la Derecha -->
             <div class="d-flex align-items-center">
-                
-                <a th:href="@{/cart}" class="text-secondary me-4 position-relative">
-                    <i class="fa-solid fa-cart-shopping fs-5"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
-                          th:text="${cartCount}">0</span>
-                </a>
-
-                <div class="d-none d-lg-flex" sec:authorize="!isAuthenticated()">
-                    <a class="btn btn-outline-primary btn-sm me-2" th:href="@{/login}">Iniciar sesión</a>
-                    <a class="btn btn-primary btn-sm" th:href="@{/register}">Registrarse</a>
+                <!-- Menú Desplegable de Usuario (Bootstrap) -->
+                <div class="dropdown">
+                    <button class="btn border-0" type="button" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="far fa-user-circle fs-4 text-secondary"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                        <li>
+                            <form th:action="@{/logout}" method="post" style="display: inline;">
+                                <button type="submit" class="dropdown-item">
+                                    Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
-
-                <div class="d-none d-lg-flex" sec:authorize="isAuthenticated()">
-                    <div class="dropdown">
-                        <button class="btn border-0" type="button" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="far fa-user-circle fs-4 text-secondary"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
-                            
-                            <li>
-                                <a class="dropdown-item" th:href="@{/courses/my-courses}">Mis Cursos</a>
-                            </li>
-                            
-                            <li sec:authorize="hasAuthority('Instructor')">
-                                <a class="dropdown-item" th:href="@{/instructor/courses}">Panel Instructor</a>
-                            </li>
-                            <li sec:authorize="hasAuthority('Administrador')">
-                                <a class="dropdown-item" th:href="@{/admin}">Panel Admin</a>
-                            </li>
-
-                            <li><hr class="dropdown-divider"></li>
-                            
-                            <li>
-                                <form th:action="@{/logout}" method="post" style="display: inline;">
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        Cerrar Sesión
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
             </div>
+
         </div>
     </div>
 </nav>
