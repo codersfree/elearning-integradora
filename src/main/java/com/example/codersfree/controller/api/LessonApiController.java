@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/modules")
@@ -40,7 +38,7 @@ public class LessonApiController {
                 .name(request.getName())
                 .position(nextPosition)
                 .duration(0) 
-                .isPreview(false)
+                // isPublish/isPreview ELIMINADO del builder
                 .module(module)
                 .build();
 
@@ -48,22 +46,25 @@ public class LessonApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedLesson);
     }
     
-    // 2. Actualizar Lección (Maneja el guardado de la descripción y el nombre)
+    // 2. Actualizar Lección (Maneja Descripción)
     @PutMapping("/{moduleId}/lessons/{lessonId}")
     public ResponseEntity<Lesson> updateLesson(@PathVariable Long moduleId, @PathVariable Long lessonId, @RequestBody LessonDto request) {
         Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new RuntimeException("Lección no encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lección no encontrada"));
         
         if (!lesson.getModule().getId().equals(moduleId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        lesson.setName(request.getName());
-        lesson.setDescription(request.getDescription());
-        
-        if (request.getIsPreview() != null) {
-             lesson.setIsPreview(request.getIsPreview());
+        // Actualización de campos
+        if (request.getName() != null) {
+            lesson.setName(request.getName());
         }
+        if (request.getDescription() != null) {
+            lesson.setDescription(request.getDescription());
+        }
+        
+        // Lógica de isPublish/isPreview ELIMINADA.
 
         Lesson updatedLesson = lessonRepository.save(lesson);
         return ResponseEntity.ok(updatedLesson);
@@ -79,7 +80,7 @@ public class LessonApiController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         
-        // **NOTA:** La eliminación física de archivos debe ser manejada en el servicio.
+        // NOTA: El controlador de subida (LessonUploadController) debe ser ajustado también.
         
         lessonRepository.delete(lesson);
         return ResponseEntity.noContent().build();

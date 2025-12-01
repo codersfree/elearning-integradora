@@ -25,11 +25,11 @@ public class Lesson {
     @Column(nullable = false, length = 255)
     private String name;
 
-    @Column(name = "video_path", length = 255)
+    @Column(name = "video_path", length = 255) // Ruta del archivo de video
     private String videoPath;
 
-    @Column(name = "image_path", length = 255) 
-    private String imagePath; // Usado para la miniatura
+    @Column(name = "image_path", length = 255) // Ruta de la miniatura (thumbnail)
+    private String imagePath; 
 
     @Lob
     @Column(columnDefinition = "TEXT")
@@ -41,8 +41,8 @@ public class Lesson {
     @Column(nullable = false)
     private Integer duration;
 
-    @Column(name = "is_publish", nullable = false)
-    private Boolean isPublish;
+    // ELIMINADO: private Boolean isPublish; 
+    // ELIMINADO: private Boolean isPreview;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -118,7 +118,10 @@ public class LessonUploadController {
         lesson.setVideoPath(null);
         lesson.setImagePath(null); 
         lesson.setDuration(0);
-        lesson.setIsPreview(false); 
+        // CORRECCIÓN CLAVE: Eliminada la referencia a setIsPreview, ya que el campo fue eliminado.
+        // Si el campo fue renombrado a isPublish, debería ser: lesson.setIsPublish(false);
+        // Asumo que quieres que se elimine cualquier referencia a esos campos booleanos.
+        
         lessonRepository.save(lesson);
         
         logger.info("FIN: Video y miniatura limpiados en DB para lección {}.", lessonId);

@@ -67,20 +67,6 @@ export const template = /* html */ `
                 <button @click="showResourcesForm = false" class="btn btn-sm btn-secondary">Cerrar</button>
             </div>
             
-            <div class="d-flex justify-content-end align-items-center gap-4 mt-3">
-                <div class="d-flex align-items-center me-3">
-                    <label class="form-check-label text-secondary me-2 text-nowrap">Vista previa gratuita:</label>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" v-model="localLesson.isPreview" @change="handleToggle('isPreview', $event)">
-                    </div>
-                </div>
-                <div class="d-flex align-items-center">
-                    <label class="form-check-label text-secondary me-2 text-nowrap">Descargable:</label>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" disabled>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
