@@ -59,6 +59,19 @@ export const template = /* html */ `
 
         </div> 
         
+        <div class="text-center my-4">
+            <button v-if="!showAddForm" class="btn btn-outline-secondary" @click="showAddSectionForm">
+                <i class="fas fa-folder-plus me-1"></i> Añadir Módulo/Sección
+            </button>
         </div>
+
+        <section-form
+            v-if="showAddForm"
+            :slug="slug"
+            :next-order="sections.length + 1"
+            @section-added="handleSectionAdded"
+            @cancel="cancelAddSection"
+        ></section-form>
+    </div>
 </div>
 `;

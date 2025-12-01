@@ -7,8 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore; 
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList; // Usar List
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,12 +37,14 @@ public class Module {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @JsonIgnore // Rompe el ciclo Course -> Module -> Course
+    @JsonIgnore 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
     private Course course;
 
+    // Cambiado a List y ordenado por 'position' para garantizar el orden de las lecciones
     @Builder.Default
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Lesson> lessons = new HashSet<>();
+    @OrderBy("position ASC")
+    private List<Lesson> lessons = new ArrayList<>();
 }

@@ -52,7 +52,7 @@ public class LessonUploadController {
 
         try {
             String oldVideoPath = lesson.getVideoPath();
-            String oldThumbnailPath = lesson.getImagePath(); // Usando imagePath
+            String oldThumbnailPath = lesson.getImagePath();
 
             // 1. Guardar el nuevo video
             String newVideoPath = fileStorageService.save("videos", file);
@@ -65,7 +65,6 @@ public class LessonUploadController {
             if (oldVideoPath != null && !oldVideoPath.isBlank()) {
                 fileStorageService.delete(oldVideoPath);
             }
-            // Limpiar la miniatura anterior
             if (oldThumbnailPath != null && !oldThumbnailPath.isBlank()) {
                  fileStorageService.delete(oldThumbnailPath);
             }
@@ -73,7 +72,7 @@ public class LessonUploadController {
             // 4. Actualizar la lección
             lesson.setVideoPath(newVideoPath);
             lesson.setDuration(realDuration); 
-            lesson.setImagePath(newThumbnailPath); // ACTUALIZANDO EL CAMPO IMAGE_PATH
+            lesson.setImagePath(newThumbnailPath); 
             
             Lesson savedLesson = lessonRepository.save(lesson);
             
