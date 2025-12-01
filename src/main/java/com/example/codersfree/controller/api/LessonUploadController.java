@@ -3,6 +3,8 @@ package com.example.codersfree.controller.api;
 import com.example.codersfree.model.Lesson;
 import com.example.codersfree.repository.LessonRepository;
 import com.example.codersfree.service.FileStorageService;
+import com.example.codersfree.service.VideoDurationService; 
+import com.example.codersfree.service.ThumbnailService; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,12 @@ public class LessonUploadController {
 
     @Autowired
     private FileStorageService fileStorageService;
+    
+    @Autowired
+    private VideoDurationService durationService; 
+
+    @Autowired
+    private ThumbnailService thumbnailService; 
 
     // Endpoint para subir un video
     @PostMapping("/{lessonId}/video")
@@ -44,23 +52,37 @@ public class LessonUploadController {
 
         try {
             String oldVideoPath = lesson.getVideoPath();
+            String oldThumbnailPath = lesson.getImagePath(); // Usando imagePath
+
+            // 1. Guardar el nuevo video
             String newVideoPath = fileStorageService.save("videos", file);
-            lesson.setVideoPath(newVideoPath);
-            lesson.setDuration(300); 
+
+            // 2. Extraer Duración y Generar Miniatura
+            Integer realDuration = durationService.getDurationInSeconds(file); 
+            String newThumbnailPath = thumbnailService.generateThumbnail(newVideoPath, "thumbnails");
             
-            // Eliminar el archivo anterior
+            // 3. Limpiar archivos antiguos
             if (oldVideoPath != null && !oldVideoPath.isBlank()) {
                 fileStorageService.delete(oldVideoPath);
             }
+            // Limpiar la miniatura anterior
+            if (oldThumbnailPath != null && !oldThumbnailPath.isBlank()) {
+                 fileStorageService.delete(oldThumbnailPath);
+            }
+
+            // 4. Actualizar la lección
+            lesson.setVideoPath(newVideoPath);
+            lesson.setDuration(realDuration); 
+            lesson.setImagePath(newThumbnailPath); // ACTUALIZANDO EL CAMPO IMAGE_PATH
             
             Lesson savedLesson = lessonRepository.save(lesson);
             
-            logger.info("FIN: Subida exitosa y lección {} actualizada.", lessonId);
+            logger.info("FIN: Subida y miniatura exitosa para lección {}.", lessonId);
             return ResponseEntity.ok(savedLesson);
 
         } catch (IOException e) {
-            logger.error("ERROR 500: Fallo al procesar/guardar el archivo. Causa: {}", e.getMessage(), e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar el archivo en el servidor.");
+            logger.error("ERROR 500: Fallo al procesar/guardar/generar thumbnail. Causa: {}", e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar el archivo o generar la miniatura.");
         }
     }
     
@@ -73,22 +95,34 @@ public class LessonUploadController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lección no encontrada con ID: " + lessonId));
 
         String videoPath = lesson.getVideoPath();
+        String thumbnailPath = lesson.getImagePath();
         
+        // 1. ELIMINAR VIDEO FÍSICO
         if (videoPath != null && !videoPath.isBlank()) {
             try {
                 fileStorageService.delete(videoPath);
             } catch (IOException e) {
-                logger.error("ERROR: No se pudo eliminar el archivo físico {}. Causa: {}", videoPath, e.getMessage());
+                logger.error("ERROR: No se pudo eliminar el video físico {}.", videoPath);
+            }
+        }
+        
+        // 2. ELIMINAR MINIATURA FÍSICA
+        if (thumbnailPath != null && !thumbnailPath.isBlank()) {
+            try {
+                fileStorageService.delete(thumbnailPath);
+            } catch (IOException e) {
+                 logger.error("ERROR: No se pudo eliminar la miniatura física {}.", thumbnailPath);
             }
         }
 
-        // Limpiar el campo en la base de datos
+        // 3. Limpiar campos en la base de datos
         lesson.setVideoPath(null);
+        lesson.setImagePath(null); 
         lesson.setDuration(0);
-        lesson.setIsPreview(false); // Limpiar preview también
+        lesson.setIsPreview(false); 
         lessonRepository.save(lesson);
         
-        logger.info("FIN: Ruta de video limpiada en DB para lección {}.", lessonId);
+        logger.info("FIN: Video y miniatura limpiados en DB para lección {}.", lessonId);
         return ResponseEntity.noContent().build();
     }
 }

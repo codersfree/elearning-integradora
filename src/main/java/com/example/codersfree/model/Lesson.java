@@ -25,11 +25,12 @@ public class Lesson {
     @Column(nullable = false, length = 255)
     private String name;
 
-    @Column(name = "video_path", length = 255) // CORREGIDO: Aumentado el tamaño del path
+    @Column(name = "video_path", length = 255) 
     private String videoPath;
 
-    @Column(name = "image_path", length = 255)
-    private String imagePath;
+    // Usaremos este campo para la ruta de la miniatura
+    @Column(name = "image_path", length = 255) 
+    private String imagePath; 
 
     @Lob
     @Column(columnDefinition = "TEXT")
