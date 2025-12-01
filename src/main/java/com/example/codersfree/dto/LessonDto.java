@@ -12,7 +12,7 @@ import lombok.Builder;
 public class LessonDto {
     
     private String name;
-    private String description;
+    private String description; // ⬅️ AÑADIR ESTE CAMPO
     private Boolean isPreview;
     
     private Integer position;

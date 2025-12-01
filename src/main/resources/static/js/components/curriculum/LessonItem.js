@@ -1,23 +1,27 @@
 import { template } from './LessonItem.template.js';
 import LessonVideoForm from './LessonVideoForm.js'; 
+import LessonDescriptionForm from './LessonDescriptionForm.js'; 
 import api from '../../utils/apiUtils.js';
 import { alertStore } from '../../store/alertStore.js';
 
 export default {
     template: template,
-    props: ['lesson', 'lessonIndex', 'moduleId'], // AÑADIDO: moduleId
+    props: ['lesson', 'lessonIndex', 'moduleId'],
     components: {
-        'lesson-video-form': LessonVideoForm
+        'lesson-video-form': LessonVideoForm,
+        'lesson-description-form': LessonDescriptionForm 
     },
-    // Emitimos 'lesson-deleted' al padre (CurriculumManager)
     emits: ['lesson-deleted', 'lesson-updated'], 
     data() {
         return {
-            // Abierto por defecto si no hay video
             isExpanded: !this.lesson.videoPath || false, 
             localLesson: { ...this.lesson },
             isEditingName: false,
-            isDeleting: false, // Estado para el spinner de eliminar lección
+            isDeleting: false,
+            isEditingContent: false, 
+            
+            showDescriptionForm: false, 
+            showResourcesForm: false,
         };
     },
     methods: {
@@ -25,11 +29,31 @@ export default {
             this.isExpanded = !this.isExpanded;
         },
         handleVideoUpdated(updatedLesson) {
-            // Actualiza los datos locales (videoPath, duration)
             Object.assign(this.localLesson, updatedLesson);
+            this.isEditingContent = false; 
         },
         
-        // --- Lógica de Edición de Nombre ---
+        // --- MANEJO DE DESCRIPCIÓN ---
+        toggleDescriptionForm() {
+            this.showDescriptionForm = !this.showDescriptionForm;
+            this.showResourcesForm = false;
+        },
+
+        handleDescriptionUpdated(newDescription) {
+            // Actualiza el estado local y cierra el formulario
+            this.localLesson.description = newDescription;
+            this.showDescriptionForm = false;
+        },
+        
+        // --- Lógica de Edición de Video/Contenido ---
+        startContentEditing() {
+            this.isEditingContent = true; 
+        },
+        cancelContentEditing() {
+            this.isEditingContent = false;
+        },
+        
+        // --- Lógica de Edición de Nombre y Persistencia (PUT) ---
         startEditName() {
             this.isEditingName = true;
         },
@@ -41,20 +65,16 @@ export default {
             this.isEditingName = false;
             await this.updateLessonDetails('name', this.localLesson.name);
         },
-        
-        // --- Lógica de Persistencia de Detalles ---
         async updateLessonDetails(key, value) {
              try {
                 if (key) this.localLesson[key] = value;
 
-                // DTO de actualización
                 const updateDto = {
                     name: this.localLesson.name,
                     description: this.localLesson.description,
                     isPreview: this.localLesson.isPreview,
                 };
 
-                // Llamada a la API PUT /api/modules/{moduleId}/lessons/{lessonId}
                 await api.put(`/api/modules/${this.moduleId}/lessons/${this.localLesson.id}`, updateDto);
                 alertStore.showMessage('Lección actualizada.', 'success');
                 
@@ -66,17 +86,14 @@ export default {
             }
         },
         
-        // --- Lógica de Eliminación de Lección (Completo) ---
+        // --- Lógica de Eliminación de Lección ---
         async deleteLesson() {
             if (!confirm(`¿Estás seguro de eliminar la clase "${this.localLesson.name}"?`)) return;
 
             this.isDeleting = true;
             try {
-                // Endpoint: DELETE /api/modules/{moduleId}/lessons/{lessonId}
-                // Usamos this.moduleId de las props para asegurar la ruta.
                 await api.del(`/api/modules/${this.moduleId}/lessons/${this.localLesson.id}`);
                 
-                // Emitimos el evento de eliminación para que CurriculumManager la remueva de la lista
                 this.$emit('lesson-deleted', this.localLesson.id, this.moduleId);
                 alertStore.showMessage('Clase eliminada con éxito.', 'success');
 
@@ -88,7 +105,7 @@ export default {
             }
         },
 
-        // --- Manejadores de Toggles ---
+        // Manejadores de Toggles
         handleToggle(key, event) {
             this.updateLessonDetails(key, event.target.checked);
         }
@@ -98,7 +115,7 @@ export default {
             return this.localLesson.videoPath && this.localLesson.videoPath.length > 0;
         },
         formattedDuration() {
-            if (this.localLesson.duration === 0) return '0:00 min';
+            if (this.localLesson.duration === 0 || !this.localLesson.duration) return '0:00 min';
             const minutes = Math.floor(this.localLesson.duration / 60);
             const seconds = (this.localLesson.duration % 60).toString().padStart(2, '0');
             return `${minutes}:${seconds} min`;

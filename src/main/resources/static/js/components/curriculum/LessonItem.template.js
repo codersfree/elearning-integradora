@@ -3,23 +3,23 @@ export const template = /* html */ `
     
     <div class="d-flex align-items-center justify-content-between py-2">
         
-        <div class="d-flex align-items-center flex-grow-1">
+        <div class="d-flex align-items-center flex-grow-1 cursor-pointer" @click="toggleExpand">
             
             <i class="fas fa-grip-vertical text-secondary me-3" style="cursor: grab;"></i>
             
             <div v-if="isEditingName" class="flex-grow-1 me-3">
                 <input type="text" 
-                        class="form-control form-control-sm" 
-                        v-model="localLesson.name"
-                        @blur="finishEditName"
-                        @keyup.enter="finishEditName"
-                        @click.stop> 
+                       class="form-control form-control-sm" 
+                       v-model="localLesson.name"
+                       @blur="finishEditName"
+                       @keyup.enter="finishEditName"
+                       @click.stop> 
             </div>
             
-            <div v-else class="flex-grow-1 d-flex align-items-center cursor-pointer" @click="toggleExpand">
+            <div v-else class="flex-grow-1 d-flex align-items-center">
                 <span class="fw-bold me-2">Clase {{ lessonIndex + 1 }}:</span>
                 <span class="fw-bold me-1">{{ localLesson.name }}</span>
-                </div>
+            </div>
         </div>
         
         <div class="d-flex gap-2 align-items-center">
@@ -49,16 +49,39 @@ export const template = /* html */ `
         <lesson-video-form 
             :lesson="localLesson"
             @video-updated="handleVideoUpdated"
+            :editing-mode="isEditingContent"
+            @cancel-content-edit="cancelContentEditing"
         ></lesson-video-form>
         
-        <div v-if="hasVideo" class="mt-4">
+        <div v-if="hasVideo && !isEditingContent" class="mt-4">
             
-            <div class="mb-3">
-                <button class="btn btn-link text-primary fw-bold p-0 me-3" @click.prevent="handleToggle('description', 'open')">+ Descripción</button>
-                <button class="btn btn-link text-primary fw-bold p-0 me-3" @click.prevent="handleToggle('resources', 'open')">+ Recursos</button>
+            <div class="mb-3 d-flex gap-3">
+                
+                <button v-if="!showDescriptionForm" 
+                        class="btn btn-link text-primary fw-bold p-0" 
+                        @click.prevent="toggleDescriptionForm">
+                    + Descripción
+                </button>
+                
+                <button class="btn btn-link text-primary fw-bold p-0" @click.prevent="showResourcesForm = !showResourcesForm">
+                    + Recursos
+                </button>
                 <button class="btn btn-link text-primary fw-bold p-0" @click.prevent="handleToggle('lab', 'open')">+ Laboratorio</button>
             </div>
 
+            <lesson-description-form
+                v-if="showDescriptionForm"
+                :lesson="localLesson"
+                :module-id="moduleId" 
+                @description-updated="handleDescriptionUpdated"
+                @cancel="toggleDescriptionForm"
+            ></lesson-description-form>
+            
+            <div v-if="showResourcesForm" class="border rounded p-3 mb-3 bg-white">
+                <h6>Formulario de Recursos</h6>
+                <button @click="showResourcesForm = false" class="btn btn-sm btn-secondary">Cerrar</button>
+            </div>
+            
             <div class="d-flex justify-content-end align-items-center gap-4 mt-3">
                 <div class="d-flex align-items-center me-3">
                     <label class="form-check-label text-secondary me-2 text-nowrap">Vista previa gratuita:</label>
