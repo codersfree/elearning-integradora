@@ -3,21 +3,39 @@
     layout:decorate="~{layouts/app}">
 
 <head>
+    <title th:text="${course.name} + ' | Coders Free'">Detalle del curso</title>
 
-    <title>Crea tu sistema de citas médicas con Laravel | Coders Free</title>
-
-    <!-- Plyr CSS -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
     <style>
         .plyr {
             border-radius: 0.5rem;
             overflow: hidden;
+            margin-bottom: 1rem;
         }
 
         .accordion-button:not(.collapsed) {
             color: #0c63e4;
             background-color: #e7f1ff;
+        }
+
+        /* Estilo para mantener la imagen en 16:9 cuando no hay video */
+        .course-image-container {
+            width: 100%;
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .course-image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -25,17 +43,21 @@
 <body>
 
     <main layout:fragment="content" class="container my-5">
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="fas fa-check-circle me-2"></i> 
+            <span th:text="${success}">Operación realizada con éxito.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
         <div class="row g-5">
-            <!-- Columna principal del contenido del curso -->
             <div class="col-lg-8 order-lg-1 order-2">
 
-                <!-- Título y Video -->
                 <section class="mb-5">
-                    <h1 class="fw-bold h2 mb-2">Crea tu sistema de citas médicas con Laravel</h1>
-                    <p class="lead text-muted">Domina Laravel y Livewire construyendo un sistema de Citas, Doctores y
-                        Pacientes.</p>
-                    <div class="d-flex flex-wrap align-items-center justify-content-between text-muted mb-3 small">
-                        <div class="d-flex align-items-center mb-2 me-3">
+                    <h1 class="fw-bold h2 mb-2" th:text="${course.name}">Nombre del curso</h1>
+                    
+                    <div class="d-flex flex-wrap align-items-center justify-content-between text-muted mb-2 small">
+                        <div class="d-flex align-items-center">
                             <div class="text-warning">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
@@ -43,193 +65,196 @@
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
                             </div>
-                            <a href="#" class="ms-2 text-primary">(2 calificaciones)</a>
                         </div>
-                        <p class="mb-2">Creado por <a href="#" class="text-primary">Victor Arana Flores</a></p>
+                        
+                        <p class="mb-0">Creado por <a href="#" class="text-primary" th:text="${course.instructor.name}">Instructor</a></p>
                     </div>
+
+                    <p class="lead text-muted" th:text="${course.summary}">Resumen del curso</p>
+
                     <div>
-                        <video id="player" playsinline controls
-                            data-poster="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/portadas/crea-tu-sistema-de-citas-medicas-con-laravel.png">
-                            <source
-                                src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/courses/promotional_videos/BghWc9ZK1j85815LfV7yIpqymb9Vur53qwICTZ2H.mp4"
-                                type="video/mp4" />
-                        </video>
+                        <div th:if="${course.videoPath != null and !#strings.isEmpty(course.videoPath)}">
+                            <video id="player" playsinline controls
+                                th:data-poster="${course.image}">
+                                <source th:src="@{'/uploads/' + ${course.videoPath}}" type="video/mp4" />
+                            </video>
+                        </div>
+
+                        <div th:unless="${course.videoPath != null and !#strings.isEmpty(course.videoPath)}" class="course-image-container">
+                            <img th:src="${course.image}" alt="Imagen del curso">
+                        </div>
                     </div>
                 </section>
 
-                <!-- Objetivos -->
                 <section class="mb-5">
                     <div class="card">
                         <div class="card-body">
                             <h2 class="card-title h4 fw-bold mb-3">Objetivos del curso</h2>
-                            <div class="row g-3">
-                                <div class="col-md-6 d-flex">
+                            
+                            <div class="row g-3" th:if="${not #lists.isEmpty(course.goals)}">
+                                <div class="col-md-6 d-flex" th:each="goal : ${course.goals}">
                                     <i class="fa-regular fa-circle-check text-primary fs-5 mt-1 me-2"></i>
-                                    <p>Desarrollar una aplicación web completa de Citas Médicas desde cero, aplicando
-                                        las mejores prácticas.</p>
+                                    <p th:text="${goal.name}">Objetivo</p>
                                 </div>
-                                <div class="col-md-6 d-flex">
-                                    <i class="fa-regular fa-circle-check text-primary fs-5 mt-1 me-2"></i>
-                                    <p>Implementar un sistema profesional de Roles y Permisos (Admin, Doctor, Paciente).
-                                    </p>
-                                </div>
-                                <div class="col-md-6 d-flex">
-                                    <i class="fa-regular fa-circle-check text-primary fs-5 mt-1 me-2"></i>
-                                    <p>Construir interfaces de usuario dinámicas y reactivas con Livewire 3.</p>
-                                </div>
-                                <div class="col-md-6 d-flex">
-                                    <i class="fa-regular fa-circle-check text-primary fs-5 mt-1 me-2"></i>
-                                    <p>Diseñar y modelar la base de datos de una aplicación real con Eloquent ORM.</p>
-                                </div>
+                            </div>
+
+                            <div class="alert alert-light" th:if="${#lists.isEmpty(course.goals)}">
+                                <i class="fas fa-info-circle me-2"></i>No hay objetivos definidos para este curso aún.
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Temario -->
                 <section class="mb-5">
                     <h2 class="h4 fw-bold mb-3">Temario del curso</h2>
-                    <div class="accordion" id="courseAccordion">
-                        <!-- Item de Acordeón -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    <strong>Introduction</strong>
-                                    <span class="ms-auto me-2 text-muted small">4 clases</span>
+                    
+                    <div class="accordion" id="courseAccordion" th:if="${not #lists.isEmpty(course.modules)}">
+                        
+                        <div class="accordion-item" th:each="module : ${course.modules}">
+                            <h2 class="accordion-header" th:id="'heading-' + ${module.id}">
+                                <button class="accordion-button" 
+                                        th:classappend="${moduleStat.first} ? '' : 'collapsed'"
+                                        type="button" 
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapse-' + ${module.id}" 
+                                        th:aria-expanded="${moduleStat.first} ? 'true' : 'false'" 
+                                        th:aria-controls="'collapse-' + ${module.id}">
+                                    
+                                    <strong th:text="${module.name}">Nombre del Módulo</strong>
+                                    <span class="ms-auto me-2 text-muted small" th:text="${#lists.size(module.lessons) + ' clases'}">0 clases</span>
                                 </button>
                             </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                                data-bs-parent="#courseAccordion">
+                            
+                            <div th:id="'collapse-' + ${module.id}" 
+                                 class="accordion-collapse collapse" 
+                                 th:classappend="${moduleStat.first} ? 'show' : ''"
+                                 th:aria-labelledby="'heading-' + ${module.id}"
+                                 data-bs-parent="#courseAccordion">
+                                
                                 <div class="accordion-body">
                                     <ul class="list-group list-group-flush">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span><i class="fas fa-play-circle me-2 text-muted"></i>Crear proyecto
-                                                laravel</span>
-                                            <span class="badge bg-light text-dark">02:16</span>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center" 
+                                            th:each="lesson : ${module.lessons}">
+                                            
+                                            <span>
+                                                <i class="fas fa-play-circle me-2 text-muted"></i>
+                                                <span th:text="${lesson.name}">Nombre de la lección</span>
+                                            </span>
+
+                                            <span class="badge bg-light text-dark" 
+                                                  th:text="${(lesson.duration / 60) + ':' + #numbers.formatInteger(lesson.duration % 60, 2)}">
+                                                00:00
+                                            </span>
                                         </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span><i class="fas fa-play-circle me-2 text-muted"></i>Instalar
-                                                Jetstream</span>
-                                            <span class="badge bg-light text-dark">04:38</span>
+
+                                        <li class="list-group-item text-center text-muted small" th:if="${#lists.isEmpty(module.lessons)}">
+                                            Este módulo aún no tiene lecciones.
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
-                        <!-- Item de Acordeón -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingTwo">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                    <strong>Configuración inicial</strong>
-                                    <span class="ms-auto me-2 text-muted small">12 clases</span>
-                                </button>
-                            </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                                data-bs-parent="#courseAccordion">
-                                <div class="accordion-body">
-                                    ...
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Item de Acordeón -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingThree">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                    <strong>Gestión de roles</strong>
-                                    <span class="ms-auto me-2 text-muted small">10 clases</span>
-                                </button>
-                            </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                                data-bs-parent="#courseAccordion">
-                                <div class="accordion-body">
-                                    ...
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+
+                    <div class="alert alert-light border" th:if="${#lists.isEmpty(course.modules)}">
+                        <i class="fas fa-exclamation-circle me-2"></i>Este curso aún no tiene secciones publicadas.
                     </div>
                 </section>
 
-                <!-- Requisitos -->
                 <section class="mb-5">
                     <h2 class="h4 fw-bold mb-3">Requisitos del curso</h2>
-                    <ul class="list-group">
-                        <li class="list-group-item"><i class="fas fa-check me-2 text-success"></i>Es necesario tener
-                            conocimientos de PHP y Programación Orientada a Objetos.</li>
-                        <li class="list-group-item"><i class="fas fa-check me-2 text-success"></i>Se asume que ya
-                            conoces los fundamentos de Laravel.</li>
-                        <li class="list-group-item"><i class="fas fa-check me-2 text-success"></i>Debes tener una
-                            comprensión básica de HTML y CSS.</li>
+                    
+                    <ul class="list-group" th:if="${not #lists.isEmpty(course.requirements)}">
+                        <li class="list-group-item" th:each="req : ${course.requirements}">
+                            <i class="fas fa-check me-2 text-success"></i>
+                            <span th:text="${req.name}">Requisito</span>
+                        </li>
                     </ul>
-                </section>
 
-                <!-- Descripción -->
-                <section class="mb-5">
-                    <h2 class="h4 fw-bold mb-3">Descripción</h2>
-                    <p>¿Estás listo para dejar atrás los tutoriales básicos y construir una aplicación web completa,
-                        robusta y profesional que puedas añadir con orgullo a tu portafolio? Si tienes conocimientos de
-                        Laravel y quieres dar el salto a la creación de sistemas complejos y del mundo real, este es el
-                        curso definitivo para ti.</p>
-                    <p>En "Crea tu sistema de citas médicas con Laravel", no solo aprenderás teoría. Juntos, y paso a
-                        paso, construiremos desde cero un <strong>Sistema de Citas Médicas</strong> totalmente
-                        funcional.</p>
-                </section>
-
-
-                <!-- Reseñas -->
-                <section>
-                    <h2 class="h4 fw-bold mb-4">Reseña de los estudiantes</h2>
-                    <div class="card mb-3">
-                        <div class="row g-0">
-                            <div class="col-md-3 d-flex justify-content-center align-items-center p-3">
-                                <img src="https://codersfree.nyc3.cdn.digitaloceanspaces.com/profile-photos/Pz6pfaUyuG9aydlgXw5C93FwhxYGDekIG7cKSjoJ.jpg"
-                                    class="img-fluid rounded-circle" alt="Avatar"
-                                    style="width: 100px; height: 100px; object-fit: cover;">
-                            </div>
-                            <div class="col-md-9">
-                                <div class="card-body">
-                                    <h5 class="card-title">Mrdev</h5>
-                                    <p class="card-text text-warning small">
-                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                            class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                            class="fas fa-star"></i>
-                                    </p>
-                                    <p class="card-text">"Extraordinario amigo muchas gracias por tu contenido. Por el
-                                        simple hecho de ver como te quedo esta plataforma se ve que realmente sabes."
-                                    </p>
-                                    <p class="card-text"><small class="text-muted">Hace 1 mes</small></p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="alert alert-light border" th:if="${#lists.isEmpty(course.requirements)}">
+                        <i class="fas fa-info-circle me-2"></i>No se han especificado requisitos.
                     </div>
                 </section>
 
+                <section class="mb-5">
+                    <h2 class="h4 fw-bold mb-3">Descripción</h2>
+                    
+                    <div th:if="${course.description != null and !#strings.isEmpty(course.description)}">
+                        <div th:utext="${course.description}"></div>
+                    </div>
+
+                    <div class="alert alert-light border" th:unless="${course.description != null and !#strings.isEmpty(course.description)}">
+                         <i class="fas fa-align-left me-2"></i>Sin descripción disponible.
+                    </div>
+                </section>
 
             </div>
 
-            <!-- Columna lateral de compra -->
             <div class="col-lg-4 order-lg-2 order-1">
                 <div class="card position-sticky" style="top: 6rem;">
                     <div class="card-body">
+                        
                         <div class="text-center mb-3">
-                            <span class="h2 fw-bold">10.00 USD</span>
-                            <span class="ms-2 text-danger text-decoration-line-through">35.00 USD</span>
+                            <span class="h2 fw-bold" th:text="${course.price.value + ' USD'}">0.00 USD</span>
                         </div>
+                        
                         <div class="d-grid gap-2">
-                            <button class="btn btn-primary">Añadir al carrito</button>
-                            <button class="btn btn-danger">Comprar ahora</button>
+                            
+                            <div th:if="${isInCart}">
+                                
+                                <form th:action="@{/cart/remove-from-course}" method="POST">
+                                    <input type="hidden" name="courseId" th:value="${course.id}">
+                                    <input type="hidden" name="slug" th:value="${course.slug}">
+                                    
+                                    <button type="submit" class="btn btn-outline-danger w-100 mb-2">
+                                        <i class="fas fa-trash me-2"></i> Eliminar del carrito
+                                    </button>
+                                </form>
+                                
+                                <a th:href="@{/cart}" class="btn btn-primary w-100">
+                                    <i class="fas fa-shopping-cart me-2"></i> Ir al Carrito de Compras
+                                </a>
+                            </div>
+
+                            <div th:unless="${isInCart}" class="d-grid gap-2">
+                                <form th:action="@{/cart/add}" method="POST">
+                                    <input type="hidden" name="courseId" th:value="${course.id}">
+                                    <input type="hidden" name="slug" th:value="${course.slug}">
+                                    <button type="submit" name="action" value="add" class="btn btn-primary w-100">
+                                        Añadir al carrito
+                                    </button>
+                                </form>
+
+                                <form th:action="@{/cart/add}" method="POST">
+                                    <input type="hidden" name="courseId" th:value="${course.id}">
+                                    <input type="hidden" name="slug" th:value="${course.slug}">
+                                    <button type="submit" name="action" value="buy" class="btn btn-danger w-100">
+                                        Comprar ahora
+                                    </button>
+                                </form>
+                            </div>
+
                         </div>
+                        
                         <hr>
+                        
                         <p class="fw-bold">Detalle del curso:</p>
                         <ul class="list-unstyled text-muted">
-                            <li class="mb-2"><i class="far fa-calendar-alt me-2"></i>Última actualización: 04/08/2025
+                            <li class="mb-2">
+                                <i class="far fa-calendar-alt me-2"></i>
+                                Última actualización: <span th:text="${#temporals.format(course.updatedAt, 'dd/MM/yyyy')}">Fecha</span>
                             </li>
-                            <li class="mb-2"><i class="far fa-clock me-2"></i>Duración: 16.4 horas</li>
-                            <li class="mb-2"><i class="fas fa-chart-line me-2"></i>Nivel: Intermedio</li>
-                            <li class="mb-2"><i class="fas fa-star me-2"></i>Calificación: 5</li>
-                            <li class="mb-2"><i class="fas fa-infinity me-2"></i>Acceso de por vida</li>
+                            <li class="mb-2">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Nivel: <span th:text="${course.level.name}">Nivel</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-layer-group me-2"></i>
+                                Categoría: <span th:text="${course.category.name}">Categoría</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-infinity me-2"></i>Acceso de por vida
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -241,11 +266,13 @@
         <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const player = new Plyr('#player');
+                const playerElement = document.getElementById('player');
+                if (playerElement) {
+                    const player = new Plyr('#player');
+                }
             });
         </script>
     </div>
 
 </body>
-
 </html>

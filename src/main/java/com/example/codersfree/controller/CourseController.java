@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.codersfree.model.Course;
+import com.example.codersfree.service.CartService;
 import com.example.codersfree.service.CategoryService;
 import com.example.codersfree.service.CourseService;
 import com.example.codersfree.service.LevelService;
@@ -33,6 +35,9 @@ public class CourseController {
 
     @Autowired
     private PriceService priceService;
+
+    @Autowired
+    private CartService cartService;
 
     @GetMapping
     public String index(
@@ -86,11 +91,13 @@ public class CourseController {
     }
 
     @GetMapping("/{slug}")
-    public String show(
-        @PathVariable String slug,
-        Model model
-    )
-    {
+    public String show(@PathVariable String slug, Model model) {
+        
+        Course course = courseService.findBySlug(slug);
+        model.addAttribute("course", course);
+
+        model.addAttribute("isInCart", cartService.contains(course.getId()));
+        
         return "courses/show";
     }
 

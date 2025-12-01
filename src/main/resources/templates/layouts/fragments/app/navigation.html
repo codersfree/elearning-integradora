@@ -22,10 +22,12 @@
                 </li>
             </ul>
             <div class="d-flex align-items-center">
-                
-                <a href="#" class="text-secondary me-4 position-relative">
+
+                <a th:href="@{/cart}" class="text-secondary me-4 position-relative">
                     <i class="fa-solid fa-cart-shopping fs-5"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
+                        th:text="${cartCount}">
                         0
                         <span class="visually-hidden">items in cart</span>
                     </span>

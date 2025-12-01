@@ -12,12 +12,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.example.codersfree.model.User;
 import com.example.codersfree.repository.UserRepository;
+import com.example.codersfree.service.CartService;
 
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CartService cartService;
 
     @ModelAttribute("currentUrl")
     public String addCurrentUrlToModel(HttpServletRequest request) {
@@ -44,5 +48,10 @@ public class GlobalControllerAdvice {
         
         // 5. Si no pasó la verificación, devuelve null.
         return null;
+    }
+
+    @ModelAttribute("cartCount")
+    public int getCartCount() {
+        return cartService.getCount();
     }
 }
