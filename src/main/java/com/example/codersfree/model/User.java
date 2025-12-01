@@ -49,35 +49,32 @@ public class User {
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
-    // Relación de Cursos Comprados
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "course_user",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "course_id")
-    )
+    // --- NUEVA RELACIÓN: Matrículas (Enrollments) ---
+    // Sustituye a la antigua lista directa de cursos
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Set<Course> courses = new HashSet<>();
+    private Set<Enrollment> enrollments = new HashSet<>();
 
-    // --- CORRECCIÓN AQUÍ: Lecciones Completadas ---
+    // Relación de Lecciones Completadas (Progreso)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "lesson_user",
-        // joinColumns apunta a ESTA entidad (User)
         joinColumns = @JoinColumn(name = "user_id"),
-        // inverseJoinColumns apunta a la OTRA entidad (Lesson)
         inverseJoinColumns = @JoinColumn(name = "lesson_id")
     )
     @Builder.Default
     private Set<Lesson> completedLessons = new HashSet<>();
 
-    // Método helper para agregar curso
-    public void addCourse(Course course) {
-        this.courses.add(course);
+    // --- HELPER ACTUALIZADO: Verifica si está inscrito a través de Enrollment ---
+    public boolean isEnrolled(Long courseId) {
+        if (this.enrollments == null) return false;
+        return this.enrollments.stream()
+                .anyMatch(e -> e.getCourse().getId().equals(courseId));
     }
 
-    // Método helper para verificar si completó una lección
+    // Helper: Verifica si completó una lección
     public boolean hasCompleted(Lesson lesson) {
+        if (this.completedLessons == null) return false;
         return this.completedLessons.stream()
                 .anyMatch(l -> l.getId().equals(lesson.getId()));
     }
