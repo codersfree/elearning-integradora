@@ -23,10 +23,7 @@ export const template = /* html */ `
                     <h5 class="mb-0 fw-bold">{{ section.name }}</h5>
                 </div>
                 <div>
-                    <button class="btn btn-sm btn-outline-primary me-2" @click="startAddingLesson(section.id)">
-                        <i class="fas fa-plus me-1"></i> Añadir Clase
-                    </button>
-                </div>
+                    </div>
             </div>
             
             <div class="p-3"> 
@@ -52,22 +49,16 @@ export const template = /* html */ `
                     @lesson-added="handleLessonAdded($event, section.id)"
                     @cancel="cancelAddingLesson(section.id)"
                 ></lesson-form>
+
+                <div v-if="!showAddLessonForm[section.id]" class="d-flex justify-content-start mt-3">
+                    <button class="btn btn-primary" @click="startAddingLesson(section.id)">
+                        <i class="fas fa-plus me-1"></i> Añadir Clase
+                    </button>
+                </div>
             </div>
 
         </div> 
         
-        <div class="text-center my-4">
-            <button v-if="!showAddForm" class="btn btn-outline-secondary" @click="showAddSectionForm">
-                <i class="fas fa-folder-plus me-1"></i> Añadir Módulo/Sección
-            </button>
         </div>
-
-        <section-form
-            v-if="showAddForm"
-            :slug="slug"  :next-order="sections.length + 1"
-            @section-added="handleSectionAdded"
-            @cancel="cancelAddSection"
-        ></section-form>
-    </div>
 </div>
 `;
